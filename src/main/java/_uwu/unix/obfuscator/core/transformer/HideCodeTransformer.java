@@ -1,11 +1,8 @@
 package _uwu.unix.obfuscator.core.transformer;
 
-import _uwu.unix.obfuscator.api.access.Access;
 import _uwu.unix.obfuscator.api.transformer.Transformer;
 
-import _uwu.unix.obfuscator.core.access.ClassAccess;
-import _uwu.unix.obfuscator.core.access.FieldAccess;
-import _uwu.unix.obfuscator.core.access.MethodAccess;
+import _uwu.unix.obfuscator.api.util.AccessUtil;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.ClassNode;
 
@@ -18,28 +15,22 @@ public class HideCodeTransformer implements Transformer {
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
-            final Access classAccess = new ClassAccess(classNode);
-
-            if (!(classAccess.isSynthetic() && classNode.visibleAnnotations == null)) {
+            if (!(AccessUtil.isSynthetic(classNode.access) && classNode.visibleAnnotations == null)) {
                 classNode.access = classNode.access | ACC_SYNTHETIC;
             }
 
             classNode.methods.forEach(methodNode -> {
-                final Access methodAccess = new MethodAccess(methodNode);
-
-                if (!methodAccess.isSynthetic()) {
+                if (!AccessUtil.isSynthetic(methodNode.access)) {
                     methodNode.access = methodNode.access | ACC_SYNTHETIC;
                 }
 
-                if (!methodNode.name.startsWith("<") && methodAccess.isBridge()) {
+                if (!methodNode.name.startsWith("<") && AccessUtil.isBridge(methodNode.access)) {
                     methodNode.access = methodNode.access | ACC_BRIDGE;
                 }
             });
 
             classNode.fields.forEach(fieldNode -> {
-                final Access fieldAccess = new FieldAccess(fieldNode);
-
-                if (!fieldAccess.isSynthetic()) {
+                if (!AccessUtil.isSynthetic(fieldNode.access)) {
                     fieldNode.access = fieldNode.access | ACC_SYNTHETIC;
                 }
             });

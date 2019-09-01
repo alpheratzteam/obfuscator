@@ -3,8 +3,7 @@ package _uwu.unix.obfuscator.core.basic;
 import _uwu.unix.obfuscator.api.basic.Obfuscator;
 import _uwu.unix.obfuscator.api.transformer.Transformer;
 import _uwu.unix.obfuscator.api.util.FileUtil;
-import _uwu.unix.obfuscator.core.transformer.HideCodeTransformer;
-import _uwu.unix.obfuscator.core.transformer.StringEncryptionTransformer;
+import _uwu.unix.obfuscator.core.transformer.*;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -35,11 +34,17 @@ public class ObfuscatorImpl implements Obfuscator {
     }
 
     @Override
-    public void onLoad() {
+    public void onLoad() { //TODO: config.json
         this.logger.info("Loading transformers...");
 
 //        this.transformers.add(new HideCodeTransformer());
-        this.transformers.add(new StringEncryptionTransformer());
+//        this.transformers.add(new StringEncryptionTransformer());
+//        this.transformers.add(new BadAnnotationTransformer());
+//        this.transformers.add(new GotoTransformer());
+//        this.transformers.add(new LineNumberTransformer());
+//        this.transformers.add(new SourceFileTransformer());
+//        this.transformers.add(new ShuffleMemberTransformer());
+        this.transformers.add(new FakeCodeTransformer());
 
         this.logger.info("Loaded transformers (" + this.transformers.size() + ")!");
         this.logger.info("Loading jar...");

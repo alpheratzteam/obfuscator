@@ -1,8 +1,7 @@
 package _uwu.unix.obfuscator.core.transformer;
 
-import _uwu.unix.obfuscator.api.access.Access;
 import _uwu.unix.obfuscator.api.transformer.Transformer;
-import _uwu.unix.obfuscator.core.access.MethodAccess;
+import _uwu.unix.obfuscator.api.util.AccessUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
@@ -23,17 +22,17 @@ public class StringEncryptionTransformer implements Transformer {
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
             final MethodNode decrypt = this.createMethod(classNode);
-            final Access access = new MethodAccess(decrypt);
             classNode.methods.add(decrypt);
 
-            classNode.methods.forEach(mn -> Arrays.stream(mn.instructions.toArray()).filter(ain -> ain.getType() == AbstractInsnNode.LDC_INSN).forEachOrdered(ain -> {
-                final LdcInsnNode ldc = (LdcInsnNode) ain;
-
-                if (!(ldc.cst instanceof String)) {
+            classNode.methods.forEach(mn -> Arrays.stream(mn.instructions.toArray())
+                    .filter(ain -> ain.getType() == AbstractInsnNode.LDC_INSN)
+                    .map(ain -> (LdcInsnNode) ain)
+                    .forEachOrdered(ain -> {
+                if (!(ain.cst instanceof String)) {
                     return;
                 }
 
-                final String string = ldc.cst.toString();
+                final String string = ain.cst.toString();
 
                 if (string.length() == 0) {
                     return;
@@ -43,13 +42,13 @@ public class StringEncryptionTransformer implements Transformer {
 
                 mn.instructions.insertBefore(current, new LdcInsnNode(encode(string, classNode.superName)));
 
-                if (access.isStatic()) {
+                if (AccessUtil.isStatic(decrypt.access)) {
                     mn.instructions.insertBefore(current, new MethodInsnNode(INVOKESTATIC, classNode.name, decrypt.name, decrypt.desc, false));
                 } else {
                     mn.instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, decrypt.name, decrypt.desc, false));
                 }
 
-                mn.instructions.remove(ldc);
+                mn.instructions.remove(ain);
             }));
         });
     }
