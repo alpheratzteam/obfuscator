@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 public class FakeCodeTransformer implements Transformer {
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
-        classMap.values().forEach(classNode -> IntStream.range(0, 5).forEachOrdered(i -> classNode.methods.add(this.createMethod(StringUtil.generateString(16)))));
+        classMap.values().forEach(classNode -> IntStream.range(0, 5).forEachOrdered(i -> classNode.methods.add(this.createMethod())));
     }
 
     @Override
@@ -25,8 +25,8 @@ public class FakeCodeTransformer implements Transformer {
     }
     
     @NotNull
-    private MethodNode createMethod(String methodName) {
-        final MethodNode methodNode = new MethodNode((RandomUtil.nextInt(2) == 1 ? ACC_PUBLIC | ACC_STATIC : ACC_PRIVATE | ACC_STATIC), methodName, "()V", null, null);
+    private MethodNode createMethod() {
+        final MethodNode methodNode = new MethodNode((RandomUtil.nextInt(2) == 1 ? ACC_PUBLIC | ACC_STATIC : ACC_PRIVATE | ACC_STATIC), StringUtil.generateString(16), "()V", null, null);
         methodNode.visitCode();
         
         final Label label0 = new Label();

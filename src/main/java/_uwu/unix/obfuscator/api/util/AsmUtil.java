@@ -36,6 +36,4 @@ public final class AsmUtil {
 
         return clinit;
     }
-
-    //TODO: isSynthetic & more
 }

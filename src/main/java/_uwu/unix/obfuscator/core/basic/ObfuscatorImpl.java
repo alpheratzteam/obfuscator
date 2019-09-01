@@ -1,9 +1,15 @@
 package _uwu.unix.obfuscator.core.basic;
 
 import _uwu.unix.obfuscator.api.basic.Obfuscator;
+import _uwu.unix.obfuscator.api.configuration.Configuration;
 import _uwu.unix.obfuscator.api.transformer.Transformer;
 import _uwu.unix.obfuscator.api.util.FileUtil;
+import _uwu.unix.obfuscator.core.configuration.ConfigurationImpl;
 import _uwu.unix.obfuscator.core.transformer.*;
+import com.google.common.reflect.ClassPath;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -22,29 +28,51 @@ import java.util.logging.Logger;
 public class ObfuscatorImpl implements Obfuscator {
 
     private final Logger                 logger;
+    private final File                   dataFolder;
     private final Map<String, ClassNode> classMap;
     private final Map<String, byte[]>    fileMap;
     private final Set<Transformer>       transformers;
+    private final Configuration          configuration;
 
     ObfuscatorImpl() {
         this.logger       = Logger.getLogger("ObfuscatorImpl");
+        this.dataFolder = new File(ObfuscatorImpl.class.getProtectionDomain().getCodeSource().getLocation().getFile()
+                .substring(0, ObfuscatorImpl.class.getProtectionDomain().getCodeSource().getLocation().getFile().lastIndexOf('/')) + "/"
+        );
+        this.configuration = new ConfigurationImpl(this);
         this.classMap     = new HashMap<>();
         this.fileMap      = new HashMap<>();
         this.transformers = new HashSet<>();
     }
 
     @Override
-    public void onLoad() { //TODO: config.json
+    public void onLoad() {
+        this.logger.info("Loading config...");
+        this.configuration.checkConfigurationFiles("config");
+
+        final JsonObject jsonObject = this.configuration.getConfiguration("config.json");
+
+        this.logger.info("Loaded config!");
         this.logger.info("Loading transformers...");
 
-//        this.transformers.add(new HideCodeTransformer());
-//        this.transformers.add(new StringEncryptionTransformer());
-//        this.transformers.add(new BadAnnotationTransformer());
-//        this.transformers.add(new GotoTransformer());
-//        this.transformers.add(new LineNumberTransformer());
-//        this.transformers.add(new SourceFileTransformer());
-//        this.transformers.add(new ShuffleMemberTransformer());
-        this.transformers.add(new FakeCodeTransformer());
+        try {
+            final ClassPath classPath = ClassPath.from(Thread.currentThread().getContextClassLoader());
+
+            jsonObject.get("transformers").getAsJsonArray().forEach(jsonElement ->
+                    classPath.getTopLevelClasses()
+                            .stream()
+                            .filter(classInfo -> classInfo.getSimpleName().equals(jsonElement.getAsString()))
+                            .findFirst()
+                            .ifPresent(classInfo -> {
+                                try {
+                                    transformers.add((Transformer) classInfo.load().newInstance());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.logger.info("Loaded transformers (" + this.transformers.size() + ")!");
         this.logger.info("Loading jar...");
@@ -55,7 +83,7 @@ public class ObfuscatorImpl implements Obfuscator {
             this.logger.info("Created file obfuscator!");
         }
 
-        final File inputFile = new File(source.getAbsolutePath(), "toObf.jar");
+        final File inputFile = new File(source.getAbsolutePath(), jsonObject.get("inputFile").getAsString());
         final File outputFile = new File(FileUtil.renameExistingFile(new File(inputFile.getAbsolutePath().replace(".jar", "-obfuscated.jar"))));
 
         this.loadJar(inputFile);
@@ -80,6 +108,21 @@ public class ObfuscatorImpl implements Obfuscator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Logger getLogger() {
+        return this.logger;
+    }
+
+    @Override
+    public File getDataFolder() {
+        return this.dataFolder;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return this.configuration;
     }
 
     @Override

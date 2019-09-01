@@ -19,11 +19,10 @@ public class GotoTransformer implements Transformer {
         classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode -> {
             final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
 
-            AbstractInsnNode next;
             while (iterator.hasNext()) {
-                next = iterator.next();
+                final AbstractInsnNode abstractInsnNode = iterator.next();
 
-                if (next.getOpcode() == GOTO && next instanceof LabelNode) {
+                if (abstractInsnNode.getOpcode() == GOTO && abstractInsnNode instanceof LabelNode) {
                     continue;
                 }
 

@@ -18,17 +18,16 @@ public class LineNumberTransformer implements Transformer {
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode -> {
             try {
-                ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
-                AbstractInsnNode next;
+                final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
 
                 while (iterator.hasNext()) {
-                    next = iterator.next();
+                    final AbstractInsnNode abstractInsnNode = iterator.next();
 
-                    if (!(next instanceof LineNumberNode)) {
+                    if (!(abstractInsnNode instanceof LineNumberNode)) {
                         continue;
                     }
 
-                    iterator.set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) next).start));
+                    iterator.set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) abstractInsnNode).start));
                 }
             } catch (Exception ignored) {}
         }));

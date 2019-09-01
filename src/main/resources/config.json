@@ -1,0 +1,7 @@
+{
+  "inputFile": "toObf.jar",
+  "transformers": [
+    "BadAnnotationTransformer",
+    "GotoTransformer"
+  ]
+}
