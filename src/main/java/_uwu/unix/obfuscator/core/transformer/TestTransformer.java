@@ -14,4 +14,9 @@ public class TestTransformer implements Transformer {
     public void transform(Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> classNode.access |= ACC_SYNTHETIC);
     }
+
+    @Override
+    public String getName() {
+        return "Test";
+    }
 }

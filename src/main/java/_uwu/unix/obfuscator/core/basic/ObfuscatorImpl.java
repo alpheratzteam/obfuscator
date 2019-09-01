@@ -54,6 +54,15 @@ public class ObfuscatorImpl implements Obfuscator {
         this.loadJar(inputFile);
         this.logger.info("Loaded jar!");
 
+        this.transformers.forEach(transformer -> {
+            final long currentTime = System.currentTimeMillis();
+
+            this.logger.info("Running " + transformer.getName() + " transformer...");
+            transformer.transform(this.classMap);
+            this.logger.info("Finished running " + transformer.getName() + "  transformer. [" + (System.currentTimeMillis() - currentTime) + "ms]");
+            this.logger.info("---------------------------------------");
+        });
+
         this.logger.info("Saving jar...");
 
         try {

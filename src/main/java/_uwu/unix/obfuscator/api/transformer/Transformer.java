@@ -11,4 +11,6 @@ public interface Transformer {
 
     void transform(Map<String, ClassNode> classMap);
 
+    String getName();
+
 }
