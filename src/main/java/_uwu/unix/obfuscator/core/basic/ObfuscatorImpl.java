@@ -3,7 +3,8 @@ package _uwu.unix.obfuscator.core.basic;
 import _uwu.unix.obfuscator.api.basic.Obfuscator;
 import _uwu.unix.obfuscator.api.transformer.Transformer;
 import _uwu.unix.obfuscator.api.util.FileUtil;
-import _uwu.unix.obfuscator.core.transformer.TestTransformer;
+import _uwu.unix.obfuscator.core.transformer.HideCodeTransformer;
+import _uwu.unix.obfuscator.core.transformer.StringEncryptionTransformer;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -37,7 +38,8 @@ public class ObfuscatorImpl implements Obfuscator {
     public void onLoad() {
         this.logger.info("Loading transformers...");
 
-        this.transformers.add(new TestTransformer());
+//        this.transformers.add(new HideCodeTransformer());
+        this.transformers.add(new StringEncryptionTransformer());
 
         this.logger.info("Loaded transformers (" + this.transformers.size() + ")!");
         this.logger.info("Loading jar...");
@@ -54,7 +56,7 @@ public class ObfuscatorImpl implements Obfuscator {
         this.loadJar(inputFile);
         this.logger.info("Loaded jar!");
 
-        this.transformers.forEach(transformer -> {
+        this.transformers.stream().filter(Objects::nonNull).forEach(transformer -> {
             final long currentTime = System.currentTimeMillis();
 
             this.logger.info("Running " + transformer.getName() + " transformer...");
