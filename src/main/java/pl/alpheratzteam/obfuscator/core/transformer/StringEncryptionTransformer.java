@@ -193,7 +193,7 @@ public class StringEncryptionTransformer implements Transformer {
 
     @Contract("_, _ -> new")
     @NotNull
-    private String encode(@NotNull String string, String className) {
+    private String encode(@NotNull String string, String className) { //TODO: unique keys: class -> key
         final byte[] data = string.getBytes();
         final byte[] key = new byte[3];
 

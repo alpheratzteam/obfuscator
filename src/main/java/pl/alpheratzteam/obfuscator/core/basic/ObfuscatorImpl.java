@@ -91,7 +91,7 @@ public class ObfuscatorImpl implements Obfuscator {
 
             this.logger.info("Running " + transformer.getName() + " transformer...");
             transformer.transform(this.classMap);
-            this.logger.info("Finished running " + transformer.getName() + "  transformer. [" + (System.currentTimeMillis() - currentTime) + "ms]");
+            this.logger.info("Finished running " + transformer.getName() + " transformer. [" + (System.currentTimeMillis() - currentTime) + "ms]");
             this.logger.info("---------------------------------------");
         });
 
