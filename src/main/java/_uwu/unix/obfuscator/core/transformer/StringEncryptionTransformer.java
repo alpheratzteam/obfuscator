@@ -20,44 +20,37 @@ import java.util.stream.IntStream;
  */
 public class StringEncryptionTransformer implements Transformer {
     @Override
-    public void transform(Map<String, ClassNode> classMap) {
+    public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
             final MethodNode decrypt = this.createMethod(classNode);
-             final Access access = new MethodAccess(decrypt);
-
+            final Access access = new MethodAccess(decrypt);
             classNode.methods.add(decrypt);
 
-            for (MethodNode mn : classNode.methods) {
-                for (AbstractInsnNode ain : mn.instructions.toArray()) {
-                    if (ain.getType() != AbstractInsnNode.LDC_INSN) {
-                        continue;
-                    }
+            classNode.methods.forEach(mn -> Arrays.stream(mn.instructions.toArray()).filter(ain -> ain.getType() == AbstractInsnNode.LDC_INSN).forEachOrdered(ain -> {
+                final LdcInsnNode ldc = (LdcInsnNode) ain;
 
-                    final LdcInsnNode ldc = (LdcInsnNode) ain;
-
-                    if (!(ldc.cst instanceof String)) {
-                        continue;
-                    }
-
-                    final String s = ldc.cst.toString();
-
-                    if (s.length() == 0) {
-                        continue;
-                    }
-
-                    final AbstractInsnNode current = ain.getNext();
-
-                    mn.instructions.insertBefore(current, new LdcInsnNode(encode(s, classNode.superName)));
-
-                    if (access.isStatic()) {
-                        mn.instructions.insertBefore(current, new MethodInsnNode(INVOKESTATIC, classNode.name, decrypt.name, decrypt.desc, false));
-                    } else {
-                        mn.instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, decrypt.name, decrypt.desc, false));
-                    }
-
-                    mn.instructions.remove(ldc);
+                if (!(ldc.cst instanceof String)) {
+                    return;
                 }
-            }
+
+                final String string = ldc.cst.toString();
+
+                if (string.length() == 0) {
+                    return;
+                }
+
+                final AbstractInsnNode current = ain.getNext();
+
+                mn.instructions.insertBefore(current, new LdcInsnNode(encode(string, classNode.superName)));
+
+                if (access.isStatic()) {
+                    mn.instructions.insertBefore(current, new MethodInsnNode(INVOKESTATIC, classNode.name, decrypt.name, decrypt.desc, false));
+                } else {
+                    mn.instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, decrypt.name, decrypt.desc, false));
+                }
+
+                mn.instructions.remove(ldc);
+            }));
         });
     }
 
