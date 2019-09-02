@@ -13,8 +13,8 @@ import java.util.stream.IntStream;
  */
 public final class StringUtil {
 
-    private static final char[]      chars = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
-    private static final Set<String> strings = new HashSet<>();
+    private static final char[]      chars   = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
+    private static final Set<String> uniqueStrings = new HashSet<>();
 
     @Contract(pure = true)
     private StringUtil() {
@@ -29,7 +29,8 @@ public final class StringUtil {
     public static String generateUniqueString(int length) {
         final String string = generateString(length);
 
-        if (!strings.contains(string)) {
+        if (!uniqueStrings.contains(string)) {
+            uniqueStrings.add(string);
             return string;
         }
 
@@ -37,13 +38,13 @@ public final class StringUtil {
     }
 
     @NotNull
-    public static String makeUnreadable(@NotNull String input) {
-        final StringBuilder builder = new StringBuilder();
+    public static String makeUnreadable(@NotNull String string) {
+        final StringBuilder stringBuilder = new StringBuilder();
 
-        for (char c : input.toCharArray()) {
-            builder.append((char) (c + '\u7159'));
+        for (char c : string.toCharArray()) {
+            stringBuilder.append((char) (c + '\u7159'));
         }
 
-        return builder.toString();
+        return stringBuilder.toString();
     }
 }
