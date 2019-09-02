@@ -1,6 +1,6 @@
 {
   "inputFile": "toObf.jar",
   "transformers": [
-    "AntiDebugTransformer"
+    "InlineRemoverTransformer"
   ]
 }

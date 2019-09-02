@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author Unix on 01.09.2019.
  */
-public class AntiDebugTransformer implements Transformer {
+public class AntiDebugTransformer implements Transformer { //TODO: random debug
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {

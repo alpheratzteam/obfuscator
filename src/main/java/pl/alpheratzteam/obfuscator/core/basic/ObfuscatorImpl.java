@@ -57,16 +57,16 @@ public class ObfuscatorImpl implements Obfuscator {
 
             jsonObject.get("transformers").getAsJsonArray().forEach(jsonElement ->
                     classPath.getTopLevelClasses()
-                            .stream()
-                            .filter(classInfo -> classInfo.getSimpleName().equals(jsonElement.getAsString()))
-                            .findFirst()
-                            .ifPresent(classInfo -> {
-                                try {
-                                    transformers.add((Transformer) classInfo.load().newInstance());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }));
+                    .stream()
+                    .filter(classInfo -> classInfo.getSimpleName().equals(jsonElement.getAsString()))
+                    .findFirst()
+                    .ifPresent(classInfo -> {
+                        try {
+                            transformers.add((Transformer) classInfo.load().newInstance());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }));
         } catch (IOException e) {
             e.printStackTrace();
         }

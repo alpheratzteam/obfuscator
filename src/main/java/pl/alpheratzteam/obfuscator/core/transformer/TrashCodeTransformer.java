@@ -47,7 +47,7 @@ public class TrashCodeTransformer implements Transformer {
         methodNode.visitInsn(IADD);
         methodNode.visitVarInsn(ISTORE, 0);
 
-        IntStream.range(0, 216).mapToObj(i -> new Label()).forEachOrdered(label2 -> {
+        IntStream.range(0, RandomUtil.nextInt(216) + 1).mapToObj(i -> new Label()).forEachOrdered(label2 -> {
             methodNode.visitLabel(label2);
             methodNode.visitLineNumber(atomicInteger.getAndIncrement(), label2);
             methodNode.visitVarInsn(ILOAD, 0);
