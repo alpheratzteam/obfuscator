@@ -16,6 +16,6 @@ JavaObfuscator is fairly easy to set up as most of the process is handled automa
 
 ### Usage
 
-You need to add your java application to the "obfuscator" folder with the name toObf.jar, start the obfuscator and wait for the program to secure your application.
+You need to add your java application to the "obfuscator" folder, set configuration for yourself in "config.json", start the obfuscator and wait for the program to secure your application.
 
 ***
