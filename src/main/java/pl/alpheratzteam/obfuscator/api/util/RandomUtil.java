@@ -1,7 +1,5 @@
 package pl.alpheratzteam.obfuscator.api.util;
 
-import org.jetbrains.annotations.Contract;
-
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,11 +10,9 @@ public final class RandomUtil {
 
     private static Random random = ThreadLocalRandom.current();
 
-    @Contract(pure = true)
     private RandomUtil() {
     }
 
-    @Contract(pure = true)
     public static Random getRandom() {
         return random;
     }
@@ -27,5 +23,9 @@ public final class RandomUtil {
 
     public static int nextInt(int bound) {
         return random.nextInt(bound);
+    }
+
+    public static boolean nextBoolean() {
+        return random.nextInt() == 0;
     }
 }

@@ -1,9 +1,11 @@
 package pl.alpheratzteam.obfuscator.core.transformer;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
 import pl.alpheratzteam.obfuscator.api.transformer.Transformer;
+import pl.alpheratzteam.obfuscator.api.util.AccessUtil;
 import pl.alpheratzteam.obfuscator.api.util.RandomUtil;
 
 import java.util.Map;
@@ -12,10 +14,25 @@ import java.util.Map;
  * @author Unix on 01.09.2019.
  */
 public class AntiDebugTransformer implements Transformer { //TODO: random debug
+
+    private final String[] debugTypes;
+
+    @Contract(pure = true)
+    public AntiDebugTransformer() {
+        this.debugTypes = new String[] {
+                "-Xbootclasspath", "-Xdebug",
+                "-agentlib", "-javaagent:",
+                "-Xrunjdwp:", "-verbose"
+        };
+    }
+
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
-        classMap.values().forEach(classNode -> {
-            if (RandomUtil.nextInt(4) == 0) {
+        classMap.values()
+                .stream()
+                .filter(classNode -> !AccessUtil.isInterface(classNode.access))
+                .forEach(classNode -> {
+            if (RandomUtil.nextBoolean()) {
                 return;
             }
 
@@ -27,7 +44,7 @@ public class AntiDebugTransformer implements Transformer { //TODO: random debug
                     return;
                 }
 
-                methodNode.instructions.insertBefore(methodNode.instructions.iterator().next(), new MethodInsnNode(INVOKESTATIC, classNode.name, x.name, x.desc, false));
+                methodNode.instructions.insertBefore(methodNode.instructions.iterator().next().getNext(), new MethodInsnNode(INVOKESTATIC, classNode.name, x.name, x.desc, false));
                 break;
             }
         });
@@ -68,59 +85,33 @@ public class AntiDebugTransformer implements Transformer { //TODO: random debug
         methodNode.visitLabel(label3);
         methodNode.visitLineNumber(12, label3);
         methodNode.visitVarInsn(ALOAD, 2);
-        methodNode.visitLdcInsn("-Xbootclasspath");
+
+        final String debugType = debugTypes[RandomUtil.nextInt(debugTypes.length)];
+        methodNode.visitLdcInsn(debugType == null ? debugTypes[0] : debugType);
         methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
 
         final Label label4 = new Label();
-        methodNode.visitJumpInsn(IFNE, label4);
-        methodNode.visitVarInsn(ALOAD, 2);
-        methodNode.visitLdcInsn("-Xdebug");
-        methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
-        methodNode.visitJumpInsn(IFNE, label4);
-        methodNode.visitVarInsn(ALOAD, 2);
-        methodNode.visitLdcInsn("-agentlib");
+        methodNode.visitJumpInsn(IFEQ, label4);
 
         final Label label5 = new Label();
         methodNode.visitLabel(label5);
         methodNode.visitLineNumber(13, label5);
-        methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
-        methodNode.visitJumpInsn(IFNE, label4);
-        methodNode.visitVarInsn(ALOAD, 2);
-        methodNode.visitLdcInsn("-javaagent:");
-        methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
-        methodNode.visitJumpInsn(IFNE, label4);
-        methodNode.visitVarInsn(ALOAD, 2);
-        methodNode.visitLdcInsn("-Xrunjdwp:");
-
-        final Label label6 = new Label();
-        methodNode.visitLabel(label6);
-        methodNode.visitLineNumber(14, label6);
-        methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
-        methodNode.visitJumpInsn(IFNE, label4);
-        methodNode.visitVarInsn(ALOAD, 2);
-        methodNode.visitLdcInsn("-verbose");
-        methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
-
-        final Label label7 = new Label();
-        methodNode.visitJumpInsn(IFEQ, label7);
-        methodNode.visitLabel(label4);
-        methodNode.visitLineNumber(15, label4);
-        methodNode.visitFrame(F_APPEND, 1, new Object[]{"java/lang/String"}, 0, null);
         methodNode.visitIntInsn(SIPUSH, 666);
         methodNode.visitMethodInsn(INVOKESTATIC, "java/lang/System", "exit", "(I)V", false);
-        methodNode.visitLabel(label7);
-        methodNode.visitLineNumber(17, label7);
-        methodNode.visitFrame(F_CHOP, 1, null, 0, null);
+        methodNode.visitLabel(label4);
+        methodNode.visitLineNumber(15, label4);
+        methodNode.visitFrame(F_SAME, 0, null, 0, null);
         methodNode.visitJumpInsn(GOTO, label1);
         methodNode.visitLabel(label2);
-        methodNode.visitLineNumber(18, label2);
+        methodNode.visitLineNumber(16, label2);
         methodNode.visitFrame(F_CHOP, 1, null, 0, null);
         methodNode.visitInsn(RETURN);
 
-        final Label label8 = new Label();
-        methodNode.visitLabel(label8);
-        methodNode.visitLocalVariable("string", "Ljava/lang/String;", null, label3, label7, 2);
-        methodNode.visitLocalVariable("this", "L" + classNode.name + ";", null, label0, label8, 0);
+        final Label label6 = new Label();
+        methodNode.visitLabel(label6);
+        methodNode.visitLocalVariable("string", "Ljava/lang/String;", null, label3, label4, 2);
+        methodNode.visitLocalVariable("this", "L"+classNode.name+";", null, label0, label6, 0);
+
         methodNode.visitMaxs(2, 3);
         methodNode.visitEnd();
 

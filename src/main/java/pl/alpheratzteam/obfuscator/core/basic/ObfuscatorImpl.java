@@ -24,6 +24,8 @@ import java.util.logging.Logger;
  */
 public class ObfuscatorImpl implements Obfuscator {
 
+    private static Obfuscator            instance;
+
     private final Logger                 logger;
     private final File                   dataFolder;
     private final Map<String, ClassNode> classMap;
@@ -32,14 +34,15 @@ public class ObfuscatorImpl implements Obfuscator {
     private final Configuration          configuration;
 
     ObfuscatorImpl() {
-        this.logger       = Logger.getLogger("ObfuscatorImpl");
-        this.dataFolder = new File(ObfuscatorImpl.class.getProtectionDomain().getCodeSource().getLocation().getFile()
+        instance = this;
+        this.logger        = Logger.getLogger("ObfuscatorImpl");
+        this.dataFolder    = new File(ObfuscatorImpl.class.getProtectionDomain().getCodeSource().getLocation().getFile()
                 .substring(0, ObfuscatorImpl.class.getProtectionDomain().getCodeSource().getLocation().getFile().lastIndexOf('/')) + "/"
         );
         this.configuration = new ConfigurationImpl(this);
-        this.classMap     = new HashMap<>();
-        this.fileMap      = new HashMap<>();
-        this.transformers = new HashSet<>();
+        this.classMap      = new HashMap<>();
+        this.fileMap       = new HashMap<>();
+        this.transformers  = new HashSet<>();
     }
 
     @Override
@@ -84,6 +87,7 @@ public class ObfuscatorImpl implements Obfuscator {
         final File outputFile = new File(FileUtil.renameExistingFile(new File(inputFile.getAbsolutePath().replace(".jar", "-obfuscated.jar"))));
 
         this.loadJar(inputFile);
+
         this.logger.info("Loaded jar!");
 
         this.transformers.stream().filter(Objects::nonNull).forEach(transformer -> {
@@ -130,6 +134,10 @@ public class ObfuscatorImpl implements Obfuscator {
     @Override
     public Map<String, byte[]> getFileMap() {
         return this.fileMap;
+    }
+
+    public static Obfuscator getInstance() {
+        return instance;
     }
 
     private void loadJar(File file) {

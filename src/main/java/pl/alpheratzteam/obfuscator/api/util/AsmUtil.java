@@ -1,6 +1,5 @@
 package pl.alpheratzteam.obfuscator.api.util;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -12,7 +11,6 @@ import org.objectweb.asm.tree.MethodNode;
  */
 public final class AsmUtil {
 
-    @Contract(pure = true)
     private AsmUtil() {
     }
 

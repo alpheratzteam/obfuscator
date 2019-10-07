@@ -16,22 +16,22 @@ public class HideCodeTransformer implements Transformer {
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
             if (!(AccessUtil.isSynthetic(classNode.access) && classNode.visibleAnnotations == null)) {
-                classNode.access = classNode.access | ACC_SYNTHETIC;
+                classNode.access |= ACC_SYNTHETIC;
             }
 
             classNode.methods.forEach(methodNode -> {
                 if (!AccessUtil.isSynthetic(methodNode.access)) {
-                    methodNode.access = methodNode.access | ACC_SYNTHETIC;
+                    methodNode.access |= ACC_SYNTHETIC;
                 }
 
                 if (!methodNode.name.startsWith("<") && AccessUtil.isBridge(methodNode.access)) {
-                    methodNode.access = methodNode.access | ACC_BRIDGE;
+                    methodNode.access |= ACC_BRIDGE;
                 }
             });
 
             classNode.fields.forEach(fieldNode -> {
                 if (!AccessUtil.isSynthetic(fieldNode.access)) {
-                    fieldNode.access = fieldNode.access | ACC_SYNTHETIC;
+                    fieldNode.access |= ACC_SYNTHETIC;
                 }
             });
         });

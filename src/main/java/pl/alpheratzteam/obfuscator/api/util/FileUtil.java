@@ -1,6 +1,5 @@
 package pl.alpheratzteam.obfuscator.api.util;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -10,7 +9,6 @@ import java.io.File;
  */
 public final class FileUtil {
 
-    @Contract(pure = true)
     private FileUtil() {
     }
 

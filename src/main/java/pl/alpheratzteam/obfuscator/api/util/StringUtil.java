@@ -1,8 +1,9 @@
 package pl.alpheratzteam.obfuscator.api.util;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,10 +14,9 @@ import java.util.stream.IntStream;
  */
 public final class StringUtil {
 
-    private static final char[]      chars   = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
+    private static final char[]      chars         = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
     private static final Set<String> uniqueStrings = new HashSet<>();
 
-    @Contract(pure = true)
     private StringUtil() {
     }
 

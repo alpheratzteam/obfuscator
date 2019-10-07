@@ -1,5 +1,6 @@
 package pl.alpheratzteam.obfuscator.core.configuration;
 
+import org.jetbrains.annotations.NotNull;
 import pl.alpheratzteam.obfuscator.api.basic.Obfuscator;
 import pl.alpheratzteam.obfuscator.api.configuration.Configuration;
 import pl.alpheratzteam.obfuscator.core.basic.ObfuscatorImpl;
@@ -68,7 +69,7 @@ public class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public void reloadConfigurationFile(String fileName) {
+    public void reloadConfigurationFile(@NotNull String fileName) {
         if (!fileName.endsWith(".json")) fileName += ".json";
 
         if (!this.jsonObjects.containsKey(fileName)) {
