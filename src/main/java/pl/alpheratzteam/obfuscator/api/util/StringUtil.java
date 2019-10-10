@@ -25,16 +25,11 @@ public final class StringUtil {
                 .mapToObj(i -> Character.toString(chars[RandomUtil.nextInt(chars.length)]))
                 .collect(Collectors.joining());
     }
-
     public static String generateUniqueString(int length) {
         final String string = generateString(length);
 
-        if (!uniqueStrings.contains(string)) {
-            uniqueStrings.add(string);
-            return string;
-        }
-
-        return generateUniqueString(length);
+        uniqueStrings.add(string);
+        return string;
     }
 
     @NotNull

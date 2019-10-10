@@ -13,13 +13,12 @@ import java.util.Map;
 /**
  * @author Unix on 01.09.2019.
  */
-public class AntiDebugTransformer implements Transformer { //TODO: random debug
+public class AntiDebugTransformer implements Transformer {
 
     private final String[] debugTypes;
 
-    @Contract(pure = true)
     public AntiDebugTransformer() {
-        this.debugTypes = new String[] {
+        this.debugTypes = new String[]{
                 "-Xbootclasspath", "-Xdebug",
                 "-agentlib", "-javaagent:",
                 "-Xrunjdwp:", "-verbose"
@@ -32,22 +31,22 @@ public class AntiDebugTransformer implements Transformer { //TODO: random debug
                 .stream()
                 .filter(classNode -> !AccessUtil.isInterface(classNode.access))
                 .forEach(classNode -> {
-            if (RandomUtil.nextBoolean()) {
-                return;
-            }
+                    if (RandomUtil.nextBoolean()) {
+                        return;
+                    }
 
-            final MethodNode x = this.createMethod(classNode);
-            classNode.methods.add(x);
+                    final MethodNode x = this.createMethod(classNode);
+                    classNode.methods.add(x);
 
-            for (MethodNode methodNode : classNode.methods) {
-                if (methodNode.name.equals("checkDebug")) {
-                    return;
-                }
+                    for (MethodNode methodNode : classNode.methods) {
+                        if (methodNode.name.equals("checkDebug")) {
+                            return;
+                        }
 
-                methodNode.instructions.insertBefore(methodNode.instructions.iterator().next().getNext(), new MethodInsnNode(INVOKESTATIC, classNode.name, x.name, x.desc, false));
-                break;
-            }
-        });
+                        methodNode.instructions.insertBefore(methodNode.instructions.iterator().next().getNext(), new MethodInsnNode(INVOKESTATIC, classNode.name, x.name, x.desc, false));
+                        break;
+                    }
+                });
     }
 
     @Override
@@ -110,7 +109,7 @@ public class AntiDebugTransformer implements Transformer { //TODO: random debug
         final Label label6 = new Label();
         methodNode.visitLabel(label6);
         methodNode.visitLocalVariable("string", "Ljava/lang/String;", null, label3, label4, 2);
-        methodNode.visitLocalVariable("this", "L"+classNode.name+";", null, label0, label6, 0);
+        methodNode.visitLocalVariable("this", "L" + classNode.name + ";", null, label0, label6, 0);
 
         methodNode.visitMaxs(2, 3);
         methodNode.visitEnd();

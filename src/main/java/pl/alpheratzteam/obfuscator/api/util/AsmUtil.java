@@ -14,7 +14,7 @@ public final class AsmUtil {
     private AsmUtil() {
     }
 
-    public static MethodNode getMethod(@NotNull ClassNode classNode, String name, String desc) {
+    public static MethodNode findMethod(@NotNull ClassNode classNode, String name, String desc) {
         return classNode.methods
                 .stream()
                 .filter(methodNode -> name.equals(methodNode.name) && desc.equals(methodNode.desc))
@@ -23,8 +23,8 @@ public final class AsmUtil {
     }
 
     @NotNull
-    public static MethodNode getOrCreateClinit(ClassNode classNode) {
-        MethodNode clinit = getMethod(classNode, "<clinit>", "()V");
+    public static MethodNode findOrCreateClinit(ClassNode classNode) {
+        MethodNode clinit = findMethod(classNode, "<clinit>", "()V");
 
         if (clinit == null) {
             clinit = new MethodNode(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);

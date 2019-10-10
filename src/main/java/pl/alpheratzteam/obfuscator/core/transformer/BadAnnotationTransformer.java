@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import pl.alpheratzteam.obfuscator.api.util.StringUtil;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -19,7 +20,9 @@ public class BadAnnotationTransformer implements Transformer {
     @Contract(pure = true)
     public BadAnnotationTransformer() {
         this.annotations = new HashSet<>();
-        IntStream.range(0, 10).forEachOrdered(i -> this.annotations.add(new AnnotationNode("@")));
+
+        final String string = StringUtil.generateString(32767);
+        IntStream.range(0, 10).forEachOrdered(i -> this.annotations.add(new AnnotationNode("@" + string)));
     }
 
     @Override

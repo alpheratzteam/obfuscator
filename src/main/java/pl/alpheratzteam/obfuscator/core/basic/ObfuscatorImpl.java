@@ -186,3 +186,7 @@ public class ObfuscatorImpl implements Obfuscator {
         }
     }
 }
+
+/*
+  TODO: unique string api <K, V>, GUI: like opengl or jpanel
+ */

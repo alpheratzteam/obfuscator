@@ -7,6 +7,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 
+import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Map;
 
@@ -17,20 +18,22 @@ public class GotoTransformer implements Transformer {
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode -> {
-            final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
+            Arrays.stream(methodNode.instructions.toArray()).forEachOrdered(ain -> {
+                final AbstractInsnNode current = ain.getNext();
 
-            while (iterator.hasNext()) {
-                final AbstractInsnNode abstractInsnNode = iterator.next();
+                if (current == null) {
+                    return;
+                }
 
-                if (abstractInsnNode.getOpcode() == GOTO && abstractInsnNode instanceof LabelNode) {
-                    continue;
+                if (current.getOpcode() == GOTO && current instanceof LabelNode) {
+                    return;
                 }
 
                 final LabelNode labelNode = new LabelNode();
 
-                iterator.add(new JumpInsnNode(GOTO, labelNode));
-                iterator.add(labelNode);
-            }
+                methodNode.instructions.iterator().add(new JumpInsnNode(GOTO, labelNode));
+                methodNode.instructions.iterator().add(labelNode);
+            });
         }));
     }
 

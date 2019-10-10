@@ -1,6 +1,8 @@
 {
   "inputFile": "toObf.jar",
   "transformers": [
-    "MethodCallTransformer"
+    "MethodCallTransformer",
+    "GotoTransformer",
+    "InlineRemoverTransformer"
   ]
 }

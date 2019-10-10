@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * @author Unix on 03.09.2019.
  */
-public class MethodCallTransformer implements Transformer {
+public class MethodCallTransformer implements Transformer { //TODO: remove empty class
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         final Map<String, Set<MethodNode>> methods = new HashMap<>();
@@ -23,11 +23,10 @@ public class MethodCallTransformer implements Transformer {
                 .findFirst();
 
         mainClass.ifPresent(clazz -> {
-            classMap.values().forEach(classNode -> {
-                if (mainClass.get().name.equals(classNode.name)) {
-                    return;
-                }
-
+            classMap.values()
+                    .stream()
+                    .filter(classNode -> !clazz.name.equals(classNode.name))
+                    .forEach(classNode -> {
                 final Set<MethodNode> methodSet = new HashSet<>();
 
                 classNode.methods
@@ -45,35 +44,32 @@ public class MethodCallTransformer implements Transformer {
 
                 clazz.methods.addAll(value);
 
-                classMap.values().stream()
+                classMap.values()
+                        .stream()
                         .filter(classNode -> classNode.name.equals(key))
                         .findFirst()
                         .ifPresent(aClass -> aClass.methods.removeAll(value));
             });
 
-            classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode -> {
-                if (!classNode.name.equals(clazz.name)) {
-                    return;
-                }
+            classMap.values()
+                    .stream()
+                    .filter(classNode -> classNode.name.equals(clazz.name))
+                    .forEach(classNode -> classNode.methods
+                            .stream()
+                            .filter(methodNode -> !methodNode.name.equals("<init>"))
+                            .forEach(methodNode -> {
+                Arrays.stream(methodNode.instructions.toArray())
+                        .filter(ain -> ain instanceof MethodInsnNode)
+                        .forEachOrdered(ain -> {
+                    final MethodInsnNode methodInsnNode = (MethodInsnNode) ain;
 
-                if (methodNode.name.equals("<init>")) {
-                    return;
-                }
+                    if (!this.isLibrary(classNode.methods, methodInsnNode.name)) {
+                        return;
+                    }
 
-                Arrays.stream(methodNode.instructions.toArray()).forEachOrdered(ain -> {
-                            if (!(ain instanceof MethodInsnNode)) {
-                                return;
-                            }
-
-                            final MethodInsnNode methodInsnNode = (MethodInsnNode) ain;
-
-                            if (!this.isLibrary(classNode.methods, methodInsnNode.name)) {
-                                return;
-                            }
-
-                            methodNode.instructions.insertBefore(ain, new MethodInsnNode(INVOKESTATIC, clazz.name, methodInsnNode.name, methodInsnNode.desc, false));
-                            methodNode.instructions.remove(ain);
-                        });
+                    methodNode.instructions.insertBefore(ain, new MethodInsnNode(INVOKESTATIC, clazz.name, methodInsnNode.name, methodInsnNode.desc, false));
+                    methodNode.instructions.remove(ain);
+                });
             }));
         });
     }

@@ -13,7 +13,7 @@ import java.util.Map;
 public class SignatureTransformer implements Transformer {
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
-        classMap.values().forEach(classNode -> classNode.signature = StringUtil.generateString(4));
+        classMap.values().forEach(classNode -> classNode.signature = StringUtil.makeUnreadable(StringUtil.generateString(4)));
     }
 
     @Override

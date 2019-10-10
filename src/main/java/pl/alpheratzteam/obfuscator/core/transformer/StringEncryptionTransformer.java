@@ -24,31 +24,25 @@ public class StringEncryptionTransformer implements Transformer {
             final MethodNode decrypt = this.createMethod(classNode);
             classNode.methods.add(decrypt);
 
-            classNode.methods.forEach(mn -> Arrays.stream(mn.instructions.toArray())
+            classNode.methods.forEach(methodNode ->
+                    Arrays.stream(methodNode.instructions.toArray())
                     .filter(ain -> ain.getType() == AbstractInsnNode.LDC_INSN)
                     .map(ain -> (LdcInsnNode) ain)
+                    .filter(ain -> ain.cst instanceof String)
+                    .filter(ain -> ain.cst.toString().length() != 0)
                     .forEachOrdered(ain -> {
-                if (!(ain.cst instanceof String)) {
-                    return;
-                }
-
                 final String string = ain.cst.toString();
-
-                if (string.length() == 0) {
-                    return;
-                }
-
                 final AbstractInsnNode current = ain.getNext();
 
-                mn.instructions.insertBefore(current, new LdcInsnNode(encode(string, classNode.superName)));
+                methodNode.instructions.insertBefore(current, new LdcInsnNode(encode(string, classNode.superName)));
 
                 if (AccessUtil.isStatic(decrypt.access)) {
-                    mn.instructions.insertBefore(current, new MethodInsnNode(INVOKESTATIC, classNode.name, decrypt.name, decrypt.desc, false));
+                    methodNode.instructions.insertBefore(current, new MethodInsnNode(INVOKESTATIC, classNode.name, decrypt.name, decrypt.desc, false));
                 } else {
-                    mn.instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, decrypt.name, decrypt.desc, false));
+                    methodNode.instructions.insertBefore(current, new MethodInsnNode(INVOKEVIRTUAL, classNode.name, decrypt.name, decrypt.desc, false));
                 }
 
-                mn.instructions.remove(ain);
+                methodNode.instructions.remove(ain);
             }));
         });
     }

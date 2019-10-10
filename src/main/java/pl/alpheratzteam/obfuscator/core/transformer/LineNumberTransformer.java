@@ -7,6 +7,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LineNumberNode;
 
+import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Map;
 
@@ -17,19 +18,21 @@ public class LineNumberTransformer implements Transformer {
     @Override
     public void transform(@NotNull Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode -> {
-            try {
-                final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
+            Arrays.stream(methodNode.instructions.toArray()).forEachOrdered(ain -> {
+                try {
+                    final AbstractInsnNode current = ain.getNext();
 
-                while (iterator.hasNext()) {
-                    final AbstractInsnNode abstractInsnNode = iterator.next();
-
-                    if (!(abstractInsnNode instanceof LineNumberNode)) {
-                        continue;
+                    if (current == null) {
+                        return;
                     }
 
-                    iterator.set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) abstractInsnNode).start));
-                }
-            } catch (Exception ignored) {}
+                    if (!(current instanceof LineNumberNode)) {
+                        return;
+                    }
+
+                    methodNode.instructions.iterator().set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) current).start));
+                } catch (Exception ignored) {}
+            });
         }));
     }
 
