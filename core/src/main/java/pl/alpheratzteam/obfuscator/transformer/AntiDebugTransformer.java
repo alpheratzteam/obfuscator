@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.MethodNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.AccessUtil;
 import pl.alpheratzteam.obfuscator.util.RandomUtil;
+import java.util.Map;
 
 /**
  * @author Unix
@@ -20,7 +21,7 @@ public class AntiDebugTransformer extends Transformer
 
     public AntiDebugTransformer(Obfuscator obfuscator) {
         super(obfuscator);
-        this.debugTypes = new String[] {
+        debugTypes = new String[] {
                 "-Xbootclasspath", "-Xdebug",
                 "-agentlib", "-javaagent:",
                 "-Xrunjdwp:", "-verbose"
@@ -28,25 +29,27 @@ public class AntiDebugTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        if (AccessUtil.isInterface(classNode.access) && !RandomUtil.nextBoolean())
-            return;
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> {
+            if (AccessUtil.isInterface(classNode.access) && !RandomUtil.nextBoolean())
+                return;
 
-        final MethodNode x = this.createMethod(classNode);
-        classNode.methods.add(x);
+            final MethodNode x = this.createMethod(classNode);
+            classNode.methods.add(x);
 
-        classNode.methods
-                .stream()
-                .takeWhile(methodNode -> !methodNode.name.equals("checkDebug"))
-                .findFirst()
-                .ifPresent(methodNode -> methodNode.instructions.insertBefore(
-                        methodNode.instructions.iterator().next().getNext(),
-                        new MethodInsnNode(INVOKESTATIC,
-                                classNode.name,
-                                x.name,
-                                x.desc,
-                                false))
-                );
+            classNode.methods
+                    .stream()
+                    .takeWhile(methodNode -> !methodNode.name.equals("checkDebug"))
+                    .findFirst()
+                    .ifPresent(methodNode -> methodNode.instructions.insertBefore(
+                            methodNode.instructions.iterator().next().getNext(),
+                            new MethodInsnNode(INVOKESTATIC,
+                                    classNode.name,
+                                    x.name,
+                                    x.desc,
+                                    false))
+                    );
+        });
     }
 
     @NotNull

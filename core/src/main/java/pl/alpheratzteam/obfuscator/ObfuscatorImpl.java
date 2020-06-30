@@ -66,11 +66,7 @@ public class ObfuscatorImpl implements Obfuscator
             final String name = transformer.getClass().getSimpleName();
 
             this.logger.info(String.format("Running %s transformer...", name));
-            this.classMap.values()
-                    .forEach(transformer::visit);
-            this.classMap
-                    .values()
-                    .forEach(transformer::after);
+            transformer.visit(classMap);
             this.logger.info(String.format("Finished running %s transformer. [%dms]", name, (System.currentTimeMillis() - currentTime)));
             this.logger.info("---------------------------------------");
         });

@@ -8,6 +8,7 @@ import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.RandomUtil;
 import pl.alpheratzteam.obfuscator.util.StringUtil;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
@@ -23,8 +24,8 @@ public class TrashCodeTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        IntStream.range(0, 50).forEachOrdered(i -> classNode.methods.add(this.createMethod()));
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> IntStream.range(0, 50).forEachOrdered(i -> classNode.methods.add(this.createMethod())));
     }
 
     @NotNull

@@ -4,9 +4,9 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.StringUtil;
-
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -28,33 +28,35 @@ public class BadAnnotationTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        if (classNode.visibleAnnotations == null)
-            classNode.visibleAnnotations = new ArrayList<>();
-        if (classNode.invisibleAnnotations == null)
-            classNode.invisibleAnnotations = new ArrayList<>();
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> {
+            if (classNode.visibleAnnotations == null)
+                classNode.visibleAnnotations = new ArrayList<>();
+            if (classNode.invisibleAnnotations == null)
+                classNode.invisibleAnnotations = new ArrayList<>();
 
-        classNode.visibleAnnotations.addAll(annotationSet);
-        classNode.invisibleAnnotations.addAll(annotationSet);
+            classNode.visibleAnnotations.addAll(annotationSet);
+            classNode.invisibleAnnotations.addAll(annotationSet);
 
-        classNode.methods.forEach(methodNode -> {
-            if (methodNode.visibleAnnotations == null)
-                methodNode.visibleAnnotations = new ArrayList<>();
-            if (methodNode.invisibleAnnotations == null)
-                methodNode.invisibleAnnotations = new ArrayList<>();
+            classNode.methods.forEach(methodNode -> {
+                if (methodNode.visibleAnnotations == null)
+                    methodNode.visibleAnnotations = new ArrayList<>();
+                if (methodNode.invisibleAnnotations == null)
+                    methodNode.invisibleAnnotations = new ArrayList<>();
 
-            methodNode.visibleAnnotations.addAll(annotationSet);
-            methodNode.invisibleAnnotations.addAll(annotationSet);
-        });
+                methodNode.visibleAnnotations.addAll(annotationSet);
+                methodNode.invisibleAnnotations.addAll(annotationSet);
+            });
 
-        classNode.fields.forEach(fieldNode -> {
-            if (fieldNode.visibleAnnotations == null)
-                fieldNode.visibleAnnotations = new ArrayList<>();
-            if (fieldNode.invisibleAnnotations == null)
-                fieldNode.invisibleAnnotations = new ArrayList<>();
+            classNode.fields.forEach(fieldNode -> {
+                if (fieldNode.visibleAnnotations == null)
+                    fieldNode.visibleAnnotations = new ArrayList<>();
+                if (fieldNode.invisibleAnnotations == null)
+                    fieldNode.invisibleAnnotations = new ArrayList<>();
 
-            fieldNode.visibleAnnotations.addAll(annotationSet);
-            fieldNode.invisibleAnnotations.addAll(annotationSet);
+                fieldNode.visibleAnnotations.addAll(annotationSet);
+                fieldNode.invisibleAnnotations.addAll(annotationSet);
+            });
         });
     }
 }

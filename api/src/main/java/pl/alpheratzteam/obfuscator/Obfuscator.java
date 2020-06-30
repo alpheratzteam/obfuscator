@@ -19,5 +19,4 @@ public interface Obfuscator
     Map<String, ClassNode> getClassMap();
 
     Map<String, byte[]> getFileMap();
-
 }

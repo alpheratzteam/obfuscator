@@ -4,6 +4,8 @@ import org.objectweb.asm.tree.ClassNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Unix
@@ -17,11 +19,13 @@ public class ShuffleMemberTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        if (classNode.methods != null)
-            Collections.shuffle(classNode.methods);
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> {
+            if (Objects.nonNull(classNode.methods))
+                Collections.shuffle(classNode.methods);
 
-        if (classNode.fields != null)
-            Collections.shuffle(classNode.fields);
+            if (Objects.nonNull(classNode.fields))
+                Collections.shuffle(classNode.fields);
+        });
     }
 }

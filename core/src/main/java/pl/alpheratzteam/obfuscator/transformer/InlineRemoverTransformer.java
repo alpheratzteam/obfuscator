@@ -7,7 +7,6 @@ import org.objectweb.asm.tree.*;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.AccessUtil;
 import pl.alpheratzteam.obfuscator.util.StringUtil;
-
 import java.util.*;
 
 /**
@@ -24,40 +23,41 @@ public class InlineRemoverTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        final Set<MethodNode> methods = new HashSet<>();
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> {
+            final Set<MethodNode> methods = new HashSet<>();
 
-        classNode.methods.forEach(methodNode -> Arrays.stream(methodNode.instructions.toArray()).forEach(ain -> {
-            final MethodNode x = this.createMethod(ain);
-            if (x == null)
+            classNode.methods.forEach(methodNode -> Arrays.stream(methodNode.instructions.toArray()).forEach(ain -> {
+                final MethodNode x = this.createMethod(ain);
+                if (x == null)
+                    return;
+
+                methods.add(x);
+                final AbstractInsnNode current = ain.getNext();
+
+                methodNode.instructions.insertBefore(current, new MethodInsnNode((AccessUtil.isStatic(x.access) ? INVOKESTATIC : INVOKEVIRTUAL), classNode.name, x.name, x.desc, false));
+                methodNode.instructions.remove(ain);
+            }));
+
+            methodSet.put(classNode.name, methods);
+        });
+
+        classMap.values().forEach(classNode -> {
+            if (!methodSet.containsKey(classNode.name))
                 return;
 
-            methods.add(x);
-            final AbstractInsnNode current = ain.getNext();
-
-            methodNode.instructions.insertBefore(current, new MethodInsnNode((AccessUtil.isStatic(x.access) ? INVOKESTATIC : INVOKEVIRTUAL), classNode.name, x.name, x.desc, false));
-            methodNode.instructions.remove(ain);
-        }));
-
-        methodSet.put(classNode.name, methods);
-    }
-
-    @Override
-    public void after(ClassNode classNode) {
-        if (!methodSet.containsKey(classNode.name))
-            return;
-
-        classNode.methods.addAll(methodSet.get(classNode.name));
+            classNode.methods.addAll(methodSet.get(classNode.name));
+        });
     }
 
     @Nullable
     private MethodNode createMethod(@NotNull AbstractInsnNode ain) {
-        final String string = StringUtil.generateString(16);
+        final String methodName = StringUtil.generateString(16);
         MethodNode methodNode = null;
 
         switch (ain.getOpcode()) {
             case SIPUSH:
-                methodNode = new MethodNode(ACC_PUBLIC | ACC_STATIC, string, "()I", null, null);
+                methodNode = new MethodNode(ACC_PUBLIC | ACC_STATIC, methodName, "()I", null, null);
                 methodNode.visitCode();
 
                 final Label label0 = new Label();
@@ -70,7 +70,7 @@ public class InlineRemoverTransformer extends Transformer
                 methodNode.visitEnd();
                 break;
             case LDC:
-                methodNode = new MethodNode(ACC_PUBLIC | ACC_STATIC, string, "()Ljava/lang/String;", null, null);
+                methodNode = new MethodNode(ACC_PUBLIC | ACC_STATIC, methodName, "()Ljava/lang/String;", null, null);
                 methodNode.visitCode();
 
                 final Label label1 = new Label();

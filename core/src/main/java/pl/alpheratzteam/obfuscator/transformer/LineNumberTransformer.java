@@ -5,8 +5,8 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.RandomUtil;
-
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author Unix
@@ -20,19 +20,19 @@ public class LineNumberTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        classNode.methods.forEach(methodNode ->
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode ->
                 Arrays.stream(methodNode.instructions.toArray()).forEachOrdered(ain -> {
-            try {
-                final AbstractInsnNode current = ain.getNext();
-                if (current == null)
-                    return;
-                if (!(current instanceof LineNumberNode))
-                    return;
+                    try {
+                        final AbstractInsnNode current = ain.getNext();
+                        if (current == null)
+                            return;
+                        if (!(current instanceof LineNumberNode))
+                            return;
 
-                methodNode.instructions.iterator().set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) current).start));
-            } catch (Exception ex) {
-            }
-        }));
+                        methodNode.instructions.iterator().set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) current).start));
+                    } catch (Exception ignored) {
+                    }
+                })));
     }
 }

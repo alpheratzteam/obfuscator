@@ -19,9 +19,5 @@ public abstract class Transformer implements Opcodes
         this.obfuscator = obfuscator;
     }
 
-    public abstract void visit(ClassNode classNode);
-
-    public void after(ClassNode classNode) {
-    }
-
+    public abstract void visit(Map<String, ClassNode> classMap);
 }

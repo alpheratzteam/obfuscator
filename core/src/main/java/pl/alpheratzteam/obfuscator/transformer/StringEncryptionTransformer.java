@@ -10,6 +10,7 @@ import pl.alpheratzteam.obfuscator.util.AccessUtil;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,25 +26,25 @@ public class StringEncryptionTransformer extends Transformer
     }
 
     @Override
-    public void visit(ClassNode classNode) {
-        final MethodNode decrypt = this.createMethod(classNode);
-        classNode.methods.add(decrypt);
+    public void visit(Map<String, ClassNode> classMap) {
+        classMap.values().forEach(classNode -> {
+            final MethodNode decrypt = this.createMethod(classNode);
+            classNode.methods.add(decrypt);
 
-        classNode.methods.forEach(methodNode ->
-                Arrays.stream(methodNode.instructions.toArray())
-                        .filter(ain -> ain.getType() == AbstractInsnNode.LDC_INSN)
-                        .map(ain -> (LdcInsnNode) ain)
-                        .filter(ain -> ain.cst instanceof String)
-                        .filter(ain -> ain.cst.toString().length() != 0)
-                        .forEachOrdered(ain -> {
-                            final String string = ain.cst.toString();
-                            final AbstractInsnNode current = ain.getNext();
+            classNode.methods.forEach(methodNode ->
+                    Arrays.stream(methodNode.instructions.toArray())
+                            .filter(ain -> ain.getType() == AbstractInsnNode.LDC_INSN)
+                            .map(ain -> (LdcInsnNode) ain)
+                            .filter(ain -> ain.cst instanceof String)
+                            .filter(ain -> ain.cst.toString().length() != 0)
+                            .forEachOrdered(ain -> {
+                                final AbstractInsnNode current = ain.getNext();
 
-                            methodNode.instructions.insertBefore(current, new LdcInsnNode(encode(string, classNode.superName)));
-
-                            methodNode.instructions.insertBefore(current, new MethodInsnNode((AccessUtil.isStatic(decrypt.access) ? INVOKESTATIC : INVOKEVIRTUAL), classNode.name, decrypt.name, decrypt.desc, false));
-                            methodNode.instructions.remove(ain);
-                        }));
+                                methodNode.instructions.insertBefore(current, new LdcInsnNode(encode(ain.cst.toString(), classNode.superName)));
+                                methodNode.instructions.insertBefore(current, new MethodInsnNode((AccessUtil.isStatic(decrypt.access) ? INVOKESTATIC : INVOKEVIRTUAL), classNode.name, decrypt.name, decrypt.desc, false));
+                                methodNode.instructions.remove(ain);
+                            }));
+        });
     }
 
     @NotNull
