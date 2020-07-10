@@ -4,10 +4,8 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.StringUtil;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -30,18 +28,18 @@ public class BadAnnotationTransformer extends Transformer
     @Override
     public void visit(Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
-            if (classNode.visibleAnnotations == null)
+            if (Objects.isNull(classNode.visibleAnnotations))
                 classNode.visibleAnnotations = new ArrayList<>();
-            if (classNode.invisibleAnnotations == null)
+            if (Objects.isNull(classNode.invisibleAnnotations))
                 classNode.invisibleAnnotations = new ArrayList<>();
 
             classNode.visibleAnnotations.addAll(annotationSet);
             classNode.invisibleAnnotations.addAll(annotationSet);
 
             classNode.methods.forEach(methodNode -> {
-                if (methodNode.visibleAnnotations == null)
+                if (Objects.isNull(methodNode.visibleAnnotations))
                     methodNode.visibleAnnotations = new ArrayList<>();
-                if (methodNode.invisibleAnnotations == null)
+                if (Objects.isNull(methodNode.invisibleAnnotations))
                     methodNode.invisibleAnnotations = new ArrayList<>();
 
                 methodNode.visibleAnnotations.addAll(annotationSet);
@@ -49,9 +47,9 @@ public class BadAnnotationTransformer extends Transformer
             });
 
             classNode.fields.forEach(fieldNode -> {
-                if (fieldNode.visibleAnnotations == null)
+                if (Objects.isNull(fieldNode.visibleAnnotations))
                     fieldNode.visibleAnnotations = new ArrayList<>();
-                if (fieldNode.invisibleAnnotations == null)
+                if (Objects.isNull(fieldNode.invisibleAnnotations))
                     fieldNode.invisibleAnnotations = new ArrayList<>();
 
                 fieldNode.visibleAnnotations.addAll(annotationSet);

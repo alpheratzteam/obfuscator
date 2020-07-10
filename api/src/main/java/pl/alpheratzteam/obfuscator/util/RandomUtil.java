@@ -31,6 +31,6 @@ public final class RandomUtil
     }
 
     public static boolean nextBoolean() {
-        return random.nextInt() == 0;
+        return random.nextBoolean();
     }
 }

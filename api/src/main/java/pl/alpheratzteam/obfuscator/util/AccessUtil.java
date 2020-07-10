@@ -3,6 +3,8 @@ package pl.alpheratzteam.obfuscator.util;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 import static org.objectweb.asm.Opcodes.*;
 
 /**
@@ -31,8 +33,32 @@ public final class AccessUtil
         return (access & ACC_STATIC) != 0;
     }
 
+    public static boolean isStaticPhase(int access) {
+        return (access & ACC_STATIC_PHASE) != 0;
+    }
+
+    public static boolean isStrict(int access) {
+        return (access & ACC_STRICT) != 0;
+    }
+
+    public static boolean isSuper(int access) {
+        return (access & ACC_SUPER) != 0;
+    }
+
     public static boolean isNative(int access) {
         return (access & ACC_NATIVE) != 0;
+    }
+
+    public static boolean isMandated(int access) {
+        return (access & ACC_MANDATED) != 0;
+    }
+
+    public static boolean isModule(int access) {
+        return (access & ACC_MODULE) != 0;
+    }
+
+    public static boolean isOpen(int access) {
+        return (access & ACC_OPEN) != 0;
     }
 
     public static boolean isAbstract(int access) {
@@ -47,8 +73,20 @@ public final class AccessUtil
         return (access & ACC_SYNTHETIC) != 0;
     }
 
+    public static boolean isTransient(int access) {
+        return (access & ACC_TRANSIENT) != 0;
+    }
+
+    public static boolean isTransitive(int access) {
+        return (access & ACC_TRANSITIVE) != 0;
+    }
+
     public static boolean isVolatile(int access) {
         return (access & ACC_VOLATILE) != 0;
+    }
+
+    public static boolean isVarargs(int access) {
+        return (access & ACC_VARARGS) != 0;
     }
 
     public static boolean isBridge(int access) {
@@ -125,7 +163,7 @@ public final class AccessUtil
 
     @Contract("_, null -> false; null, !null -> false")
     public static boolean isFieldGeneric(String desc, String signature) {
-        return signature != null && desc != null
+        return Objects.nonNull(signature) && Objects.nonNull(desc)
                 && signature.startsWith("T")
                 && signature.endsWith(";")
                 && Character.isUpperCase(signature.charAt(1))

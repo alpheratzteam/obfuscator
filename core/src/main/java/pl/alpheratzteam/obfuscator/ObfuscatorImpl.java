@@ -6,6 +6,8 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.exception.ObfuscatorException;
+import pl.alpheratzteam.obfuscator.transformer.DebugInfoRemoverTransformer;
+import pl.alpheratzteam.obfuscator.transformer.FullAccessTransformer;
 import pl.alpheratzteam.obfuscator.transformer.Transformer;
 import pl.alpheratzteam.obfuscator.util.FileUtil;
 
@@ -40,43 +42,40 @@ public class ObfuscatorImpl implements Obfuscator
 
     @Override
     public void onStart() {
-        this.logger.info("Loading transformers...");
+        logger.info("Loading transformers...");
 
+        transformerSet.add(new DebugInfoRemoverTransformer(this));
         //transformers
         //use something
 
-        this.logger.info("Loaded transformers (" + this.transformerSet.size() + ")!");
-        this.logger.info("Loading jar...");
+        logger.info("Loaded transformers (" + this.transformerSet.size() + ")!");
+        logger.info("Loading jar...");
 
         final File source = new File("obfuscator");
-
-        if (!source.exists() && source.mkdirs()) {
-            this.logger.info("Created file obfuscator!");
-        }
+        if (!source.exists() && source.mkdirs())
+            logger.info("Created file obfuscator!");
 
         final File inputFile = new File(source.getAbsolutePath(), "toObf.jar");
         final File outputFile = new File(FileUtil.renameExistingFile(new File(inputFile.getAbsolutePath().replace(".jar", "-obfuscated.jar"))));
-
         this.loadJar(inputFile);
 
-        this.logger.info("Loaded jar!");
+        logger.info("Loaded jar!");
 
-        this.transformerSet.stream().filter(Objects::nonNull).forEach(transformer -> {
+        transformerSet.stream().filter(Objects::nonNull).forEach(transformer -> {
             final long currentTime = System.currentTimeMillis();
             final String name = transformer.getClass().getSimpleName();
 
-            this.logger.info(String.format("Running %s transformer...", name));
+            logger.info(String.format("Running %s transformer...", name));
             transformer.visit(classMap);
-            this.logger.info(String.format("Finished running %s transformer. [%dms]", name, (System.currentTimeMillis() - currentTime)));
-            this.logger.info("---------------------------------------");
+            logger.info(String.format("Finished running %s transformer. [%dms]", name, (System.currentTimeMillis() - currentTime)));
+            logger.info("---------------------------------------");
         });
 
-        this.logger.info("Saving jar...");
-
+        logger.info("Saving jar...");
         try {
             try (JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(outputFile))) {
                 this.saveJar(jarOutputStream);
-                this.logger.info("Saved jar!");
+                logger.info("Saved jar!");
             }
         } catch (IOException ex) {
             throw new ObfuscatorException(ex);
@@ -85,37 +84,33 @@ public class ObfuscatorImpl implements Obfuscator
 
     @Override
     public Logger getLogger() {
-        return this.logger;
+        return logger;
     }
 
     @Override
     public Map<String, ClassNode> getClassMap() {
-        return this.classMap;
+        return classMap;
     }
 
     @Override
     public Map<String, byte[]> getFileMap() {
-        return this.fileMap;
+        return fileMap;
     }
 
     private void loadJar(File file) {
         try (JarFile jarFile = new JarFile(file)) {
             final Enumeration<JarEntry> entries = jarFile.entries();
-
             while (entries.hasMoreElements()) {
                 final JarEntry jarEntry = entries.nextElement();
-
                 try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
                     final byte[] bytes = IOUtils.toByteArray(inputStream);
-
                     if (!jarEntry.getName().endsWith(".class")) {
-                        this.fileMap.put(jarEntry.getName(), bytes);
+                        fileMap.put(jarEntry.getName(), bytes);
                         continue;
                     }
 
                     final ClassNode classNode = new ClassNode();
                     final ClassReader classReader = new ClassReader(bytes);
-
                     classReader.accept(classNode, ClassReader.EXPAND_FRAMES);
                     this.classMap.put(classNode.name, classNode);
                 }
@@ -131,7 +126,6 @@ public class ObfuscatorImpl implements Obfuscator
             final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
             jarOutputStream.putNextEntry(jarEntry);
-
             classNode.accept(classWriter);
             jarOutputStream.write(classWriter.toByteArray());
             jarOutputStream.closeEntry();

@@ -29,7 +29,7 @@ public class InlineRemoverTransformer extends Transformer
 
             classNode.methods.forEach(methodNode -> Arrays.stream(methodNode.instructions.toArray()).forEach(ain -> {
                 final MethodNode x = this.createMethod(ain);
-                if (x == null)
+                if (Objects.isNull(x))
                     return;
 
                 methods.add(x);

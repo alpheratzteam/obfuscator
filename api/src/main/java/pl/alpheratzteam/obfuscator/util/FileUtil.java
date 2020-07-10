@@ -23,7 +23,6 @@ public final class FileUtil
 
             final String newName = existingFile.getAbsolutePath().replace(".jar", "") + i + ".jar";
             final File backUpName = new File(newName);
-
             if (!backUpName.exists()) {
                 existingFile.renameTo(backUpName);
                 existingFile.delete();

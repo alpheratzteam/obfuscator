@@ -7,6 +7,7 @@ import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.RandomUtil;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Unix
@@ -25,7 +26,7 @@ public class LineNumberTransformer extends Transformer
                 Arrays.stream(methodNode.instructions.toArray()).forEachOrdered(ain -> {
                     try {
                         final AbstractInsnNode current = ain.getNext();
-                        if (current == null)
+                        if (Objects.isNull(current))
                             return;
                         if (!(current instanceof LineNumberNode))
                             return;
@@ -33,6 +34,7 @@ public class LineNumberTransformer extends Transformer
                         methodNode.instructions.iterator().set(new LineNumberNode(RandomUtil.nextInt(), ((LineNumberNode) current).start));
                     } catch (Exception ignored) {
                     }
-                })));
+                }))
+        );
     }
 }

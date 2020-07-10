@@ -4,6 +4,7 @@ import org.objectweb.asm.tree.ClassNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.AccessUtil;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Unix
@@ -19,7 +20,7 @@ public class HideCodeTransformer extends Transformer
     @Override
     public void visit(Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
-            if (!(AccessUtil.isSynthetic(classNode.access) && classNode.visibleAnnotations == null))
+            if (!(AccessUtil.isSynthetic(classNode.access) && Objects.isNull(classNode.visibleAnnotations)))
                 classNode.access |= ACC_SYNTHETIC;
 
             classNode.methods.forEach(methodNode -> {

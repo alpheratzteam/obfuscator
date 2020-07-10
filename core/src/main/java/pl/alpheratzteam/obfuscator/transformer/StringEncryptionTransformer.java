@@ -50,7 +50,6 @@ public class StringEncryptionTransformer extends Transformer
     @NotNull
     private MethodNode createMethod(@NotNull ClassNode classNode) {
         final MethodNode methodNode = new MethodNode(ACC_PUBLIC | ACC_STATIC, "decode", "(Ljava/lang/String;)Ljava/lang/String;", null, null);
-
         methodNode.visitCode();
 
         final Label label0 = new Label();
@@ -185,12 +184,10 @@ public class StringEncryptionTransformer extends Transformer
     private String encode(@NotNull String string, String className) { //TODO: unique keys: class -> key
         final byte[] data = string.getBytes();
         final byte[] key = new byte[3];
-
         IntStream.range(0, 3).forEachOrdered(i -> key[i] = (byte) (127 | string.length() & i ^ className.charAt(0) % className.length()));
 
         final byte[] out = new byte[data.length];
         IntStream.range(0, data.length).forEachOrdered(i -> out[i] = (byte) (data[i] ^ key[i % key.length]));
-
         return new String(out);
     }
 

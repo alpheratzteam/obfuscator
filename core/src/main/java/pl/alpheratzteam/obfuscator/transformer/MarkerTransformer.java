@@ -27,7 +27,6 @@ public class MarkerTransformer extends Transformer
         classMap.values().forEach(classNode -> classNode.methods.add(methodNode));
     }
 
-
     private MethodNode createMethod() {
         final MethodNode methodNode = new MethodNode(ACC_PUBLIC | ACC_STATIC, methodName, "()V", null, null);
         methodNode.visitCode();

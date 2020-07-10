@@ -8,10 +8,7 @@ package pl.alpheratzteam.obfuscator;
 public class ApplicationInitializer
 {
     public static void main(String... args) {
-        final Obfuscator obfuscator = new ObfuscatorImpl();
-        final Thread thread = new Thread(obfuscator::onStart);
-
-        thread.setName("AlpheratzObfuscator");
-        thread.start();
+        new Thread(new ObfuscatorImpl()::onStart, "AlpheratzObfuscator")
+            .start();
     }
 }

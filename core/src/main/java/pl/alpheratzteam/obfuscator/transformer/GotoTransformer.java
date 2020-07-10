@@ -7,6 +7,7 @@ import org.objectweb.asm.tree.LabelNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Unix
@@ -24,14 +25,16 @@ public class GotoTransformer extends Transformer
         classMap.values().forEach(classNode -> classNode.methods.forEach(methodNode ->
                 Arrays.stream(methodNode.instructions.toArray()).forEachOrdered(ain -> {
                     final AbstractInsnNode current = ain.getNext();
-                    if (current == null)
+                    if (Objects.isNull(current))
                         return;
+
                     if (current.getOpcode() == GOTO && current instanceof LabelNode)
                         return;
 
                     final LabelNode labelNode = new LabelNode();
                     methodNode.instructions.iterator().add(new JumpInsnNode(GOTO, labelNode));
                     methodNode.instructions.iterator().add(labelNode);
-                })));
+                })
+        ));
     }
 }

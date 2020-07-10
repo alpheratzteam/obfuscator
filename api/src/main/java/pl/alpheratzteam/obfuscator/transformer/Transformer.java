@@ -3,7 +3,6 @@ package pl.alpheratzteam.obfuscator.transformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import pl.alpheratzteam.obfuscator.Obfuscator;
-
 import java.util.Map;
 
 /**

@@ -9,6 +9,7 @@ import pl.alpheratzteam.obfuscator.Obfuscator;
 import pl.alpheratzteam.obfuscator.util.AccessUtil;
 import pl.alpheratzteam.obfuscator.util.RandomUtil;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Unix
@@ -84,7 +85,7 @@ public class AntiDebugTransformer extends Transformer
         methodNode.visitVarInsn(ALOAD, 2);
 
         final String debugType = debugTypes[RandomUtil.nextInt(debugTypes.length)];
-        methodNode.visitLdcInsn(debugType == null ? debugTypes[0] : debugType);
+        methodNode.visitLdcInsn(Objects.isNull(debugType) ? debugTypes[0] : debugType);
         methodNode.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
 
         final Label label4 = new Label();
@@ -111,7 +112,6 @@ public class AntiDebugTransformer extends Transformer
 
         methodNode.visitMaxs(2, 3);
         methodNode.visitEnd();
-
         return methodNode;
     }
 }
