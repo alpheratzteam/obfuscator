@@ -3,11 +3,13 @@ package pl.alpheratzteam.obfuscator;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.commons.CodeSizeEvaluator;
 import org.objectweb.asm.tree.ClassNode;
-import pl.alpheratzteam.obfuscator.Obfuscator;
+import org.objectweb.asm.tree.MethodNode;
 import pl.alpheratzteam.obfuscator.exception.ObfuscatorException;
-import pl.alpheratzteam.obfuscator.transformer.DebugInfoRemoverTransformer;
-import pl.alpheratzteam.obfuscator.transformer.FullAccessTransformer;
+import pl.alpheratzteam.obfuscator.transformer.ClassicFlowTransformer;
+import pl.alpheratzteam.obfuscator.transformer.ClassicNumberTransformer;
+import pl.alpheratzteam.obfuscator.transformer.FakeCheckTransformer;
 import pl.alpheratzteam.obfuscator.transformer.Transformer;
 import pl.alpheratzteam.obfuscator.util.FileUtil;
 
@@ -44,7 +46,7 @@ public class ObfuscatorImpl implements Obfuscator
     public void onStart() {
         logger.info("Loading transformers...");
 
-        transformerSet.add(new DebugInfoRemoverTransformer(this));
+        transformerSet.add(new FakeCheckTransformer(this));
         //transformers
         //use something
 
@@ -95,6 +97,13 @@ public class ObfuscatorImpl implements Obfuscator
     @Override
     public Map<String, byte[]> getFileMap() {
         return fileMap;
+    }
+
+    @Override
+    public int getSizeLeeway(MethodNode methodNode) {
+        final CodeSizeEvaluator codeSizeEvaluator = new CodeSizeEvaluator(null);
+        methodNode.accept(codeSizeEvaluator);
+        return codeSizeEvaluator.getMaxSize() - 65535;
     }
 
     private void loadJar(File file) {

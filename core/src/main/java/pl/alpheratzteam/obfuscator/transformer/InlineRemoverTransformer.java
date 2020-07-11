@@ -26,16 +26,13 @@ public class InlineRemoverTransformer extends Transformer
     public void visit(Map<String, ClassNode> classMap) {
         classMap.values().forEach(classNode -> {
             final Set<MethodNode> methods = new HashSet<>();
-
             classNode.methods.forEach(methodNode -> Arrays.stream(methodNode.instructions.toArray()).forEach(ain -> {
-                final MethodNode x = this.createMethod(ain);
+                final MethodNode x = createMethod(ain);
                 if (Objects.isNull(x))
                     return;
 
                 methods.add(x);
-                final AbstractInsnNode current = ain.getNext();
-
-                methodNode.instructions.insertBefore(current, new MethodInsnNode((AccessUtil.isStatic(x.access) ? INVOKESTATIC : INVOKEVIRTUAL), classNode.name, x.name, x.desc, false));
+                methodNode.instructions.insertBefore(ain.getNext(), new MethodInsnNode((AccessUtil.isStatic(x.access) ? INVOKESTATIC : INVOKEVIRTUAL), classNode.name, x.name, x.desc, false));
                 methodNode.instructions.remove(ain);
             }));
 
