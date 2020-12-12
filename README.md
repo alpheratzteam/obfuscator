@@ -14,8 +14,16 @@ JavaObfuscator is fairly easy to set up as most of the process is handled automa
 
 ***
 
-### Usage
+### TODO
 
-You need to add your java application to the "obfuscator" folder, set configuration for yourself in "config.json", start the obfuscator and wait for the program to secure your application.
+- boolean obf
+- new string encryption
+- java -> kotlin
+- insn builder
+- number obf
+- crc32 error
+- decompilators crasher
+- website (?)
+- gui (c++, jni)
 
 ***
