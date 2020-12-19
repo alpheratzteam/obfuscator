@@ -2,8 +2,12 @@ package pl.alpheratzteam.obfuscator.util
 
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
-import java.lang.UnsupportedOperationException
-import java.util.Objects
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.any
+import kotlin.collections.filterIndexed
+import kotlin.collections.forEachIndexed
+import kotlin.collections.set
 
 // https://github.com/ByteZ1337/Vetric/blob/master/src/main/kotlin/xyz/xenondevs/obfuscator/utils/asm/ASMUtils.kt
 
@@ -100,7 +104,6 @@ object ASMUtil {
             else -> LdcInsnNode(value)
         }
 
-
     fun isIntInsn(insn: AbstractInsnNode): Boolean {
         return when {
             Objects.isNull(insn) -> false
@@ -111,13 +114,48 @@ object ASMUtil {
         }
     }
 
+    fun isLongInsn(insn: AbstractInsnNode): Boolean = insn.opcode == LCONST_0 || insn.opcode == LCONST_1 || (insn is LdcInsnNode && insn.cst is Long)
+
+    fun isFloatInsn(insn: AbstractInsnNode): Boolean = (insn.opcode in FCONST_0..FCONST_2 || insn is LdcInsnNode && insn.cst is Float)
+
+    fun isDoubleInsn(insn: AbstractInsnNode): Boolean = (insn.opcode in DCONST_0..DCONST_1 || insn is LdcInsnNode && insn.cst is Double)
+
+    // https://github.com/ItzSomebody/radon/blob/master/src/main/java/me/itzsomebody/radon/utils/ASMUtils.java
+
     fun getIntFromInsn(insn: AbstractInsnNode): Int {
         val opcode = insn.opcode
         return when {
             opcode in ICONST_M1..ICONST_5 -> opcode - 3
-            insn is IntInsnNode && insn.getOpcode() !== NEWARRAY -> insn.operand
+            insn is IntInsnNode && insn.opcode !== NEWARRAY -> insn.operand
             insn is LdcInsnNode && insn.cst is Int -> insn.cst as Int
             else -> throw UnsupportedOperationException()
+        }
+    }
+
+    fun getLongFromInsn(insn: AbstractInsnNode): Long {
+        val opcode = insn.opcode
+        return when {
+            opcode in LCONST_0..LCONST_1 -> (opcode - 9).toLong()
+            insn is LdcInsnNode && insn.cst is Long -> insn.cst as Long
+            else -> 0L
+        }
+    }
+
+    fun getFloatFromInsn(insn: AbstractInsnNode): Float {
+        val opcode = insn.opcode
+        return when {
+            opcode in FCONST_0..FCONST_2 -> (opcode - 11).toFloat()
+            insn is LdcInsnNode && insn.cst is Float -> insn.cst as Float
+            else -> .0f
+        }
+    }
+
+    fun getDoubleFromInsn(insn: AbstractInsnNode): Double {
+        val opcode = insn.opcode
+        return when {
+            opcode in DCONST_0..DCONST_1 -> (opcode - 14).toDouble()
+            insn is LdcInsnNode && insn.cst is Double -> insn.cst as Double
+            else -> .0
         }
     }
 }

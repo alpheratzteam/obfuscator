@@ -5,10 +5,7 @@ import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 import pl.alpheratzteam.obfuscator.Obfuscator
 import pl.alpheratzteam.obfuscator.api.transformer.Transformer
-import pl.alpheratzteam.obfuscator.util.ASMUtil
-import pl.alpheratzteam.obfuscator.util.RandomUtil
-import pl.alpheratzteam.obfuscator.util.StringUtil
-import pl.alpheratzteam.obfuscator.util.insnBuilder
+import pl.alpheratzteam.obfuscator.util.*
 
 /**
  * @author Unix

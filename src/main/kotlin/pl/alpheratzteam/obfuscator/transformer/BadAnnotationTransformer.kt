@@ -24,29 +24,27 @@ class BadAnnotationTransformer : Transformer {
         obfuscator.classes.forEach {
             val classNode = it.value
 
-            when { Objects.isNull(classNode.visibleAnnotations) -> classNode.visibleAnnotations = mutableListOf() }
-            when { Objects.isNull(classNode.invisibleAnnotations) -> classNode.invisibleAnnotations = mutableListOf() }
-
             classNode.run {
+                when { Objects.isNull(visibleAnnotations) -> visibleAnnotations = mutableListOf() }
+                when { Objects.isNull(invisibleAnnotations) -> invisibleAnnotations = mutableListOf() }
+
                 visibleAnnotations.addAll(annotations)
                 invisibleAnnotations.addAll(annotations)
             }
 
             classNode.methods.forEach {
-                when { Objects.isNull(it.visibleAnnotations) -> it.visibleAnnotations = mutableListOf() }
-                when { Objects.isNull(it.invisibleAnnotations) -> it.invisibleAnnotations = mutableListOf() }
-
                 it.run {
+                    when { Objects.isNull(visibleAnnotations) -> visibleAnnotations = mutableListOf() }
+                    when { Objects.isNull(invisibleAnnotations) -> invisibleAnnotations = mutableListOf() }
                     visibleAnnotations.addAll(annotations)
                     invisibleAnnotations.addAll(annotations)
                 }
             }
 
             classNode.fields.forEach {
-                when { Objects.isNull(it.visibleAnnotations) -> it.visibleAnnotations = mutableListOf() }
-                when { Objects.isNull(it.invisibleAnnotations) -> it.invisibleAnnotations = mutableListOf() }
-
                 it.run {
+                    when { Objects.isNull(visibleAnnotations) -> visibleAnnotations = mutableListOf() }
+                    when { Objects.isNull(invisibleAnnotations) -> invisibleAnnotations = mutableListOf() }
                     visibleAnnotations.addAll(annotations)
                     invisibleAnnotations.addAll(annotations)
                 }
