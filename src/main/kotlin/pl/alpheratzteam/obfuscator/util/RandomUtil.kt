@@ -9,33 +9,20 @@ import java.util.concurrent.ThreadLocalRandom
 
 object RandomUtil {
 
-    private val random: ThreadLocalRandom = ThreadLocalRandom.current()
+    private val random = ThreadLocalRandom.current()
 
-    fun int(max: Int): Int {
-        return random.nextInt(max)
-    }
+    fun int(max: Int) = random.nextInt(max)
 
-    fun int(): Int {
-        return random.nextInt()
-    }
+    fun int() = random.nextInt()
 
-    fun double(): Double {
-        return random.nextDouble()
-    }
+    fun double() = random.nextDouble()
 
-    fun int(min: Int, max: Int): Int {
-        return random.nextInt(min, max)
-    }
+    fun int(min: Int, max: Int) = random.nextInt(min, max)
 
-    fun double(min: Double, max: Double): Double {
-        return random.nextDouble(min, max)
-    }
+    fun double(min: Double, max: Double) = random.nextDouble(min, max)
 
-    fun chance(chance: Double): Boolean {
-        return Math.random() * 100.0 <= chance
-    }
+    fun chance(chance: Double) = Math.random() * 100.0 <= chance
 
-    fun boolean(): Boolean {
-        return random.nextBoolean()
-    }
+    fun boolean() = random.nextBoolean()
+
 }

@@ -10,5 +10,5 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
  */
 
 class NopRemoverTransformer : Transformer {
-    override fun transform(obfuscator: Obfuscator) = obfuscator.classes.forEach { it.value.methods.forEach { methodNode -> methodNode.instructions.filter { it.opcode == NOP }.forEach { methodNode.instructions.remove(it) } } }
+    override fun transform(obfuscator: Obfuscator) = obfuscator.classes.values.forEach { it.methods.forEach { methodNode -> methodNode.instructions.filter { it.opcode == NOP }.forEach { methodNode.instructions.remove(it) } } }
 }

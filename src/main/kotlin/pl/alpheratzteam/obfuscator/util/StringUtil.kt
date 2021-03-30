@@ -53,4 +53,5 @@ object StringUtil {
 
         return stringBuilder.toString()
     }
+
 }

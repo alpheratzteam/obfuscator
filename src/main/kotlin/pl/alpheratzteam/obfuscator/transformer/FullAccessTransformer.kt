@@ -16,8 +16,8 @@ class FullAccessTransformer : Transformer {
     ) // separate (enum): class, method, field
 
     override fun transform(obfuscator: Obfuscator) {
-        obfuscator.classes.forEach {
-            with (it.value) {
+        obfuscator.classes.values.forEach {
+            with (it) {
 //                access = changeAccess(access) // change classNode
                 methods.filter { !it.name.startsWith("<") }.forEach { it.access = changeAccess(it.access) } // change methodNode
                 fields.forEach { it.access = changeAccess(it.access) } // change fieldNode
@@ -30,4 +30,5 @@ class FullAccessTransformer : Transformer {
         accesses.filter { access and it == 0 }.forEach { newAccess = newAccess or it }
         return newAccess
     }
+
 }

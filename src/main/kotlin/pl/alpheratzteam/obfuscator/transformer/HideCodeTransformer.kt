@@ -4,6 +4,7 @@ import org.objectweb.asm.Opcodes.*
 import pl.alpheratzteam.obfuscator.Obfuscator
 import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 import pl.alpheratzteam.obfuscator.util.ASMUtil
+import pl.alpheratzteam.obfuscator.util.ConditionUtil
 import java.util.Objects
 
 /**
@@ -12,16 +13,29 @@ import java.util.Objects
  */
 
 class HideCodeTransformer : Transformer {
-    override fun transform(obfuscator: Obfuscator) {
-        obfuscator.classes.forEach {
-            val classNode = it.value
-            when { !(ASMUtil.isSynthetic(classNode.access) && Objects.isNull(classNode.visibleAnnotations)) -> classNode.access = classNode.access or ACC_SYNTHETIC }
 
-            classNode.methods.forEach {
-                when { !ASMUtil.isSynthetic(it.access) -> it.access = it.access or ACC_SYNTHETIC }
-                when { !it.name.startsWith("<") && ASMUtil.isBridge(it.access) -> it.access = it.access or ACC_BRIDGE }
+    override fun transform(obfuscator: Obfuscator) {
+        obfuscator.classes.values.forEach {
+            ConditionUtil.checkCondition(!(ASMUtil.isSynthetic(it.access) && Objects.isNull(it.visibleAnnotations))) {
+                it.access = it.access or ACC_SYNTHETIC
             }
-            classNode.fields.forEach { when { !ASMUtil.isSynthetic(it.access) -> it.access = it.access or ACC_SYNTHETIC } }
+
+            it.methods.forEach {
+                ConditionUtil.checkCondition(!ASMUtil.isSynthetic(it.access)) {
+                    it.access = it.access or ACC_SYNTHETIC
+                }
+
+                ConditionUtil.checkCondition(!it.name.startsWith("<") && ASMUtil.isBridge(it.access)) {
+                    it.access = it.access or ACC_BRIDGE
+                }
+            }
+
+            it.fields.forEach {
+                ConditionUtil.checkCondition(ASMUtil.isSynthetic(it.access)) {
+                    it.access = it.access or ACC_SYNTHETIC
+                }
+            }
         }
     }
+
 }

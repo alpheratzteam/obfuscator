@@ -10,6 +10,7 @@ import org.objectweb.asm.tree.*
  */
 
 class InsnBuilder {
+
     val list = InsnList()
 
     operator fun InsnList.unaryPlus() = list.add(this)

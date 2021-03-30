@@ -81,4 +81,5 @@ class AntiDebugTransformer : Transformer {
         }
         return method
     }
+
 }

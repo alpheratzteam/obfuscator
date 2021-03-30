@@ -15,17 +15,20 @@ import pl.alpheratzteam.obfuscator.util.RandomUtil
  */
 
 class TrashCodeTransformer : Transformer {
+
     override fun transform(obfuscator: Obfuscator) {
-        obfuscator.classes.forEach {
-            it.value.methods.filter { !it.name.startsWith("<") }.forEach {
+        obfuscator.classes.values.forEach {
+            it.methods.filter { !it.name.startsWith("<") }.forEach {
                 val methodNode = it
                 it.instructions.forEach {
-                    if (!(it is MethodInsnNode))
+                    if (!(it is MethodInsnNode)) {
                         return@forEach
+                    }
 
                     val methodInsnNode = it
-                    if (methodInsnNode.owner.startsWith("\u0000"))
+                    if (methodInsnNode.owner.startsWith("\u0000")) {
                         return@forEach
+                    }
 
                     val insnList = insnBuilder {
                         +LabelNode()
@@ -70,10 +73,10 @@ class TrashCodeTransformer : Transformer {
                         +LabelNode()
                     }
 
-
                     methodNode.instructions.insertBefore(methodInsnNode.next, insnList)
                 }
             }
         }
     }
+
 }

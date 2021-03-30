@@ -5,7 +5,6 @@ import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
 import java.io.*
 import java.lang.Exception
-import java.util.*
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -18,15 +17,15 @@ import java.util.jar.JarOutputStream
 object JarUtil {
 
     fun loadJar(file: File): Pair<MutableMap<String, ClassNode>, MutableMap<String, ByteArray>> {
-        val classes: MutableMap<String, ClassNode> = mutableMapOf()
-        val assets: MutableMap<String, ByteArray> = mutableMapOf()
+        val classes = mutableMapOf<String, ClassNode>()
+        val assets = mutableMapOf<String, ByteArray>()
 
         JarFile(file).use {
-            val entries: Enumeration<JarEntry> = it.entries()
+            val entries = it.entries()
             while (entries.hasMoreElements()) {
-                val jarEntry: JarEntry = entries.nextElement()
+                val jarEntry = entries.nextElement()
                 try {
-                    val bytes: ByteArray = asByteArray(it.getInputStream(jarEntry))
+                    val bytes = asByteArray(it.getInputStream(jarEntry))
                     if (!jarEntry.name.endsWith(".class")) {
                         assets[jarEntry.name] = bytes
                         continue
@@ -82,4 +81,5 @@ object JarUtil {
             ByteArray(0)
         }
     }
+
 }

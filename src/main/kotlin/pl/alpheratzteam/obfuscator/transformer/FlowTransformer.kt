@@ -15,16 +15,17 @@ import org.objectweb.asm.tree.JumpInsnNode
  */
 
 class FlowTransformer : Transformer {
+
     override fun transform(obfuscator: Obfuscator) {
-        obfuscator.classes.forEach {
+        obfuscator.classes.values.forEach { classNode ->
             var hasField = false
-            val classNode = it.value
             val fieldName = StringUtil.generateString(8)
             classNode.methods.forEach {
                 val methodNode = it
                 methodNode.instructions.forEach {
-                    if (it.opcode != GOTO)
+                    if (it.opcode != GOTO) {
                         return@forEach
+                    }
 
                     hasField = true
                     with(methodNode) {
@@ -41,4 +42,5 @@ class FlowTransformer : Transformer {
             }
         }
     }
+
 }

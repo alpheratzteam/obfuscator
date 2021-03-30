@@ -10,5 +10,5 @@ import pl.alpheratzteam.obfuscator.util.StringUtil
  */
 
 class SignatureTransformer : Transformer {
-    override fun transform(obfuscator: Obfuscator) = obfuscator.classes.forEach { it.value.signature = StringUtil.makeUnreadable(StringUtil.generateString(4)) }
+    override fun transform(obfuscator: Obfuscator) = obfuscator.classes.values.forEach { it.signature = StringUtil.makeUnreadable(StringUtil.generateString(4)) }
 }

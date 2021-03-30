@@ -3,6 +3,7 @@ package pl.alpheratzteam.obfuscator.transformer
 import org.objectweb.asm.tree.AnnotationNode
 import pl.alpheratzteam.obfuscator.Obfuscator
 import pl.alpheratzteam.obfuscator.api.transformer.Transformer
+import pl.alpheratzteam.obfuscator.util.ConditionUtil
 import pl.alpheratzteam.obfuscator.util.StringUtil
 import java.util.Objects
 
@@ -25,8 +26,13 @@ class BadAnnotationTransformer : Transformer {
             val classNode = it.value
 
             classNode.run {
-                when { Objects.isNull(visibleAnnotations) -> visibleAnnotations = mutableListOf() }
-                when { Objects.isNull(invisibleAnnotations) -> invisibleAnnotations = mutableListOf() }
+                ConditionUtil.checkCondition(Objects.isNull(visibleAnnotations)) {
+                    visibleAnnotations = mutableListOf()
+                }
+
+                ConditionUtil.checkCondition(Objects.isNull(invisibleAnnotations)) {
+                    invisibleAnnotations = mutableListOf()
+                }
 
                 visibleAnnotations.addAll(annotations)
                 invisibleAnnotations.addAll(annotations)
@@ -34,8 +40,14 @@ class BadAnnotationTransformer : Transformer {
 
             classNode.methods.forEach {
                 it.run {
-                    when { Objects.isNull(visibleAnnotations) -> visibleAnnotations = mutableListOf() }
-                    when { Objects.isNull(invisibleAnnotations) -> invisibleAnnotations = mutableListOf() }
+                    ConditionUtil.checkCondition(Objects.isNull(visibleAnnotations)) {
+                        visibleAnnotations = mutableListOf()
+                    }
+
+                    ConditionUtil.checkCondition(Objects.isNull(invisibleAnnotations)) {
+                        invisibleAnnotations = mutableListOf()
+                    }
+
                     visibleAnnotations.addAll(annotations)
                     invisibleAnnotations.addAll(annotations)
                 }
@@ -43,12 +55,19 @@ class BadAnnotationTransformer : Transformer {
 
             classNode.fields.forEach {
                 it.run {
-                    when { Objects.isNull(visibleAnnotations) -> visibleAnnotations = mutableListOf() }
-                    when { Objects.isNull(invisibleAnnotations) -> invisibleAnnotations = mutableListOf() }
+                    ConditionUtil.checkCondition(Objects.isNull(visibleAnnotations)) {
+                        visibleAnnotations = mutableListOf()
+                    }
+
+                    ConditionUtil.checkCondition(Objects.isNull(invisibleAnnotations)) {
+                        invisibleAnnotations = mutableListOf()
+                    }
+
                     visibleAnnotations.addAll(annotations)
                     invisibleAnnotations.addAll(annotations)
                 }
             }
         }
     }
+
 }

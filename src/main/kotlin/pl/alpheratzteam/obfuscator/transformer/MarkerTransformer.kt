@@ -18,7 +18,7 @@ class MarkerTransformer : Transformer {
 
     override fun transform(obfuscator: Obfuscator) {
         val methodNode = makeMethod()
-        obfuscator.classes.forEach { it.value.methods.add(methodNode) }
+        obfuscator.classes.values.forEach { it.methods.add(methodNode) }
     }
 
     private fun makeMethod(): MethodNode {
@@ -38,4 +38,5 @@ class MarkerTransformer : Transformer {
         }
         return method
     }
+
 }

@@ -9,18 +9,19 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
  */
 
 class ShuffleMemberTransformer : Transformer {
+
     override fun transform(obfuscator: Obfuscator) {
-        obfuscator.classes.forEach {
-            val classNode = it.value
-            classNode.attrs?.shuffle()
-            classNode.methods?.shuffle()
-            classNode.methods?.forEach {
+        obfuscator.classes.values.forEach {
+            it.attrs?.shuffle()
+            it.methods?.shuffle()
+            it.methods?.forEach {
                 it.localVariables?.shuffle()
                 it.parameters?.shuffle()
                 it.attrs?.shuffle()
             }
-            classNode.fields?.shuffle()
-            classNode.fields?.forEach { it.attrs?.shuffle() }
+            it.fields?.shuffle()
+            it.fields?.forEach { it.attrs?.shuffle() }
         }
     }
+
 }

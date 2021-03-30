@@ -10,5 +10,5 @@ import pl.alpheratzteam.obfuscator.util.StringUtil
  */
 
 class SourceFileTransformer : Transformer {
-    override fun transform(obfuscator: Obfuscator) = obfuscator.classes.forEach { it.value.sourceFile = StringUtil.generateString(Byte.MAX_VALUE.toInt()) }
+    override fun transform(obfuscator: Obfuscator) = obfuscator.classes.values.forEach { it.sourceFile = StringUtil.generateString(Byte.MAX_VALUE.toInt()) }
 }

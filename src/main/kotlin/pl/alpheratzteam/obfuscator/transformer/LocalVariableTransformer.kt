@@ -11,10 +11,12 @@ import java.util.*
  */
 
 class LocalVariableTransformer : Transformer {
+
     override fun transform(obfuscator: Obfuscator) {
         obfuscator.classes.flatMap { it.value.methods }
             .filter { Objects.nonNull(it.localVariables) }
             .flatMap { it.localVariables }
             .forEach { it.name = StringUtil.generateString(16) }
     }
+
 }

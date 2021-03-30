@@ -19,14 +19,12 @@ class NumberTransformer : Transformer {
     // TODO: 18.12.2020 float, double, long
 
     override fun transform(obfuscator: Obfuscator) {
-        obfuscator.classes.forEach {
-            val numbers: MutableMap<Int, Int> = mutableMapOf()
-            val classNode = it.value
+        obfuscator.classes.values.forEach { classNode ->
+            val numbers = mutableMapOf<Int, Int>()
             val fieldName = StringUtil.generateString(8)
             classNode.fields.add(FieldNode(ACC_STATIC + ACC_PRIVATE, fieldName, "[I", null, null))
-            classNode.methods.forEach {
-                val methodNode = it
-                it.instructions.forEach {
+            classNode.methods.forEach { methodNode ->
+                methodNode.instructions.forEach {
                     when {
                         ASMUtil.isIntInsn(it) -> { // int
                             val fieldNumber = RandomUtil.int(10, 3000)
@@ -81,4 +79,5 @@ class NumberTransformer : Transformer {
         }
         return method
     }
+
 }

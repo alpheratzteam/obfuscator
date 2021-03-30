@@ -12,11 +12,12 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
  */
 
 class DebugInfoRemoverTransformer : Transformer {
+
     override fun transform(obfuscator: Obfuscator) {
         val classes: MutableMap<String, ClassNode> = mutableMapOf()
-        obfuscator.classes.forEach {
+        obfuscator.classes.values.forEach {
             val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-            it.value.accept(classWriter)
+            it.accept(classWriter)
 
             val newClassNode = ClassNode()
             ClassReader(classWriter.toByteArray()).accept(newClassNode, ClassReader.SKIP_DEBUG)
@@ -26,4 +27,5 @@ class DebugInfoRemoverTransformer : Transformer {
         obfuscator.classes.clear()
         obfuscator.classes.putAll(classes)
     }
+
 }

@@ -12,10 +12,10 @@ import java.io.File
 
 class Obfuscator {
 
-    private val dataFolder: File = File("obfuscator") // base folder
+    private val dataFolder = File("obfuscator") // base folder
 
-    var classes: MutableMap<String, ClassNode> = mutableMapOf() // classes from jar
-    var assets: MutableMap<String, ByteArray> = mutableMapOf() // assets from jar
+    var classes = mutableMapOf<String, ClassNode>() // classes from jar
+    var assets = mutableMapOf<String, ByteArray>() // assets from jar
 
     fun onStart() {
         val jarFile = File(dataFolder, "jars").apply { // create files
@@ -49,4 +49,5 @@ class Obfuscator {
             println("Saved jar!")
         }
     }
+    
 }
