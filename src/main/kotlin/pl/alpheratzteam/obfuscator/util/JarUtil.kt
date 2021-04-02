@@ -16,6 +16,11 @@ import java.util.jar.JarOutputStream
 
 object JarUtil {
 
+    /**
+     * Loads jar file as [Pair].
+     * @param file input file.
+     * @return [Pair] as readed content from the file.
+     */
     fun loadJar(file: File): Pair<MutableMap<String, ClassNode>, MutableMap<String, ByteArray>> {
         val classes = mutableMapOf<String, ClassNode>()
         val assets = mutableMapOf<String, ByteArray>()
@@ -44,6 +49,12 @@ object JarUtil {
         return Pair(classes, assets)
     }
 
+    /**
+     * Saves contents to jar file.
+     * @param file output file.
+     * @param pair content to save.
+     * @throws [IOException] thrown when error is occurred.
+     */
     @Throws(IOException::class)
     fun saveJar(file: File, pair: Pair<MutableMap<String, ClassNode>, MutableMap<String, ByteArray>>) {
         JarOutputStream(FileOutputStream(file)).use {
@@ -65,6 +76,11 @@ object JarUtil {
         }
     }
 
+    /**
+     * This methods reads content from [InputStream] to [ByteArray].
+     * @param inputStream stream to read.
+     * @return [ByteArray] readed data.
+     */
     private fun asByteArray(inputStream: InputStream): ByteArray {
         return try {
             val out = ByteArrayOutputStream()

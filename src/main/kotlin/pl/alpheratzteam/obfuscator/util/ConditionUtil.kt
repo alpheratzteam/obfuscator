@@ -7,6 +7,13 @@ package pl.alpheratzteam.obfuscator.util
 
 object ConditionUtil {
 
+    /**
+     * Checks some conditions.
+     * if **true**, runs [Runnable].
+     * @param condition as conditions to check.
+     * @param runnable as runnable to run.
+     * @see [Runnable]
+     */
     fun checkCondition(condition: Boolean, runnable: Runnable) {
         if (!condition) {
             return

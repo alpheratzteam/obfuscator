@@ -14,9 +14,12 @@ class Obfuscator {
 
     private val dataFolder = File("obfuscator") // base folder
 
-    var classes = mutableMapOf<String, ClassNode>() // classes from jar
-    var assets = mutableMapOf<String, ByteArray>() // assets from jar
+    val classes = mutableMapOf<String, ClassNode>() // classes from jar
+    val assets = mutableMapOf<String, ByteArray>() // assets from jar
 
+    /**
+     * The main startup method of the obfuscator.
+     */
     fun onStart() {
         val jarFile = File(dataFolder, "jars").apply { // create files
             dataFolder.mkdir()

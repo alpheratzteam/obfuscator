@@ -8,6 +8,7 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 import pl.alpheratzteam.obfuscator.util.StringUtil
 import org.objectweb.asm.tree.InsnNode
 import org.objectweb.asm.tree.JumpInsnNode
+import pl.alpheratzteam.obfuscator.util.ConditionUtil
 
 /**
  * @author Unix
@@ -37,8 +38,8 @@ class FlowTransformer : Transformer {
                 }
             }
 
-            when {
-                hasField -> classNode.fields.add(FieldNode(ACC_PUBLIC + ACC_STATIC + ACC_FINAL, fieldName, "Z", null, null))
+            ConditionUtil.checkCondition(hasField) {
+                classNode.fields.add(FieldNode(ACC_PUBLIC + ACC_STATIC + ACC_FINAL, fieldName, "Z", null, null))
             }
         }
     }
