@@ -21,13 +21,8 @@ class FlowTransformer : Transformer {
         obfuscator.classes.values.forEach { classNode ->
             var hasField = false
             val fieldName = StringUtil.generateString(8)
-            classNode.methods.forEach {
-                val methodNode = it
-                methodNode.instructions.forEach {
-                    if (it.opcode != GOTO) {
-                        return@forEach
-                    }
-
+            classNode.methods.forEach { methodNode ->
+                methodNode.instructions.filter { it.opcode == GOTO }.forEach {
                     hasField = true
                     with(methodNode) {
                         instructions.insertBefore(it, FieldInsnNode(GETSTATIC, classNode.name, fieldName, "Z"))

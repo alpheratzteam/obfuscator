@@ -14,7 +14,7 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 class DebugInfoRemoverTransformer : Transformer {
 
     override fun transform(obfuscator: Obfuscator) {
-        val classes: MutableMap<String, ClassNode> = mutableMapOf()
+        val classes = mutableMapOf<String, ClassNode>()
         obfuscator.classes.values.forEach {
             val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
             it.accept(classWriter)

@@ -18,19 +18,17 @@ class TrashCodeTransformer : Transformer {
 
     override fun transform(obfuscator: Obfuscator) {
         obfuscator.classes.values.forEach {
-            it.methods.filter { !it.name.startsWith("<") }.forEach {
-                val methodNode = it
-                it.instructions.forEach {
+            it.methods.filter { !it.name.startsWith("<") }.forEach { methodNode ->
+                methodNode.instructions.forEach {
                     if (!(it is MethodInsnNode)) {
                         return@forEach
                     }
 
-                    val methodInsnNode = it
-                    if (methodInsnNode.owner.startsWith("\u0000")) {
+                    if (it.owner.startsWith("\u0000")) {
                         return@forEach
                     }
 
-                    val insnList = insnBuilder {
+                    methodNode.instructions.insertBefore(it.next, insnBuilder {
                         +LabelNode()
                         val string = StringUtil.generateString(2)
                         ldc(string)
@@ -71,9 +69,7 @@ class TrashCodeTransformer : Transformer {
                         +labelNode
                         frame(F_SAME, 0, null, 0, null)
                         +LabelNode()
-                    }
-
-                    methodNode.instructions.insertBefore(methodInsnNode.next, insnList)
+                    })
                 }
             }
         }

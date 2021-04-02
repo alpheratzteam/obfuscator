@@ -30,10 +30,8 @@ class HideCodeTransformer : Transformer {
                 }
             }
 
-            it.fields.forEach {
-                ConditionUtil.checkCondition(ASMUtil.isSynthetic(it.access)) {
-                    it.access = it.access or ACC_SYNTHETIC
-                }
+            it.fields.filter { ASMUtil.isStatic(it.access) }.forEach {
+                it.access = it.access or ACC_SYNTHETIC
             }
         }
     }

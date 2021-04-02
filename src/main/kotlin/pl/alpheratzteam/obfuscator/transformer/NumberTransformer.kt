@@ -25,38 +25,36 @@ class NumberTransformer : Transformer {
             classNode.fields.add(FieldNode(ACC_STATIC + ACC_PRIVATE, fieldName, "[I", null, null))
             classNode.methods.forEach { methodNode ->
                 methodNode.instructions.forEach {
-                    when {
-                        ASMUtil.isIntInsn(it) -> { // int
-                            val fieldNumber = RandomUtil.int(10, 3000)
-                            val originalNumber = ASMUtil.getIntFromInsn(it)
-                            val fakeNumber = RandomUtil.int(10, 3000)
-                            val calcNumber = originalNumber xor fakeNumber * fieldNumber
+                    ConditionUtil.checkCondition(ASMUtil.isIntInsn(it)) { // int
+                        val fieldNumber = RandomUtil.int(10, 3000)
+                        val originalNumber = ASMUtil.getIntFromInsn(it)
+                        val fakeNumber = RandomUtil.int(10, 3000)
+                        val calcNumber = originalNumber xor fakeNumber * fieldNumber
 
-                            numbers.put(numberId, fieldNumber)
-                            methodNode.instructions.insertBefore(it, insnBuilder {
-                                ldc(calcNumber)
-                                ldc(fakeNumber)
-                                getstatic(classNode.name, fieldName, "[I")
-                                ldc(numberId)
-                                iaload()
-                                imul()
-                                ixor()
-                            })
-                            methodNode.instructions.remove(it)
-                            ++numberId
-                        }
+                        numbers.put(numberId, fieldNumber)
+                        methodNode.instructions.insertBefore(it, insnBuilder {
+                            ldc(calcNumber)
+                            ldc(fakeNumber)
+                            getstatic(classNode.name, fieldName, "[I")
+                            ldc(numberId)
+                            iaload()
+                            imul()
+                            ixor()
+                        })
+                        methodNode.instructions.remove(it)
+                        ++numberId
                     }
                 }
             }
 
             with (classNode) {
                 methods.removeIf { methodNode -> methodNode.name.equals("<clinit>") }
-                methods.add(makeClinit(classNode.name, fieldName, numbers))
+                methods.add(makeClinit(Pair(classNode.name, fieldName), numbers))
             }
         }
     }
 
-    private fun makeClinit(owner: String, fieldName: String, numbers: MutableMap<Int, Int>): MethodNode {
+    private fun makeClinit(pair: Pair<String, String>, numbers: MutableMap<Int, Int>): MethodNode {
         val method = MethodNode()
         with(method) {
             access = ACC_STATIC
@@ -67,9 +65,9 @@ class NumberTransformer : Transformer {
             instructions = insnBuilder {
                 ldc(numberId)
                 newarray(T_INT)
-                putstatic(owner, fieldName, "[I")
+                putstatic(pair.first, pair.second, "[I")
                 numbers.forEach {
-                    getstatic(owner, fieldName, "[I")
+                    getstatic(pair.first, pair.second, "[I")
                     ldc(it.key)
                     ldc(it.value)
                     iastore()
