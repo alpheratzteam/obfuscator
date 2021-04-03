@@ -21,7 +21,7 @@ JavaObfuscator is fairly easy to set up as most of the process is handled automa
 - ~~java -> kotlin~~
 - ~~insn builder~~
 - ~~number obf~~
-- crc32 error
+- ~~crc32 error~~
 - decompilators crasher
 - website (?)
 - gui (c++, jni)
