@@ -8,6 +8,8 @@ import java.lang.Exception
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
+import java.util.zip.CRC32
+import java.util.zip.ZipOutputStream
 
 /**
  * @author Unix
@@ -58,6 +60,7 @@ object JarUtil {
     @Throws(IOException::class)
     fun saveJar(file: File, pair: Pair<MutableMap<String, ClassNode>, MutableMap<String, ByteArray>>) {
         JarOutputStream(FileOutputStream(file)).use {
+            corruptCRC32(it)
             pair.first.values.forEach { classNode ->
                 val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
                 it.putNextEntry(JarEntry(classNode.name + ".class"))
@@ -95,6 +98,16 @@ object JarUtil {
         } catch (ex: Exception) {
             ex.printStackTrace()
             ByteArray(0)
+        }
+    }
+
+    private fun corruptCRC32(outputStream: ZipOutputStream) {
+        val field = ZipOutputStream::class.java.getDeclaredField("crc")
+        field.isAccessible = true
+        field[outputStream] = object : CRC32() {
+            override fun getValue(): Long {
+                return RandomUtil.int(Int.MAX_VALUE).toLong()
+            }
         }
     }
 
