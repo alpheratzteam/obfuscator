@@ -35,7 +35,7 @@ class Obfuscator {
             assets.putAll(second)
         }
 
-        val transformers = mutableListOf(NumberTransformer()) // modifiers
+        val transformers = mutableListOf(TrashExceptionTransformer()) // modifiers
         transformers.forEach {
             val name = it.javaClass.simpleName
             var time = System.currentTimeMillis()
