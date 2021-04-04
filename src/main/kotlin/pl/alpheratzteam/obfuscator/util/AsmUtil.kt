@@ -159,4 +159,6 @@ object ASMUtil {
         }
     }
 
+    fun isInstruction(insn: AbstractInsnNode?) = insn !is FrameNode && insn !is LineNumberNode && insn !is LabelNode
+
 }

@@ -163,6 +163,7 @@ class InsnBuilder {
     fun if_icmpgt(label: LabelNode) = +JumpInsnNode(IF_ICMPGT, label)
     fun if_icmpeq(label: LabelNode) = +JumpInsnNode(IF_ICMPEQ, label)
     fun if_icmpne(label: LabelNode) = +JumpInsnNode(IF_ICMPNE, label)
+    fun if_acmpeq(label: LabelNode) = +JumpInsnNode(IF_ACMPEQ, label)
 
     fun ifnull(label: LabelNode) = +JumpInsnNode(IFNULL, label)
     fun ifnonnull(label: LabelNode) = +JumpInsnNode(IFNONNULL, label)

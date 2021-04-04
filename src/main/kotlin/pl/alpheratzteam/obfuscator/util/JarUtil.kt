@@ -60,9 +60,10 @@ object JarUtil {
     @Throws(IOException::class)
     fun saveJar(file: File, pair: Pair<MutableMap<String, ClassNode>, MutableMap<String, ByteArray>>) {
         JarOutputStream(FileOutputStream(file)).use {
-            corruptCRC32(it)
+            corrupt(it) // TODO: 04.04.2021 add this to configuration
+
             pair.first.values.forEach { classNode ->
-                val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
+                val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_FRAMES)
                 it.putNextEntry(JarEntry(classNode.name + ".class"))
                 classNode.accept(classWriter)
                 it.write(classWriter.toByteArray())
@@ -101,13 +102,16 @@ object JarUtil {
         }
     }
 
-    private fun corruptCRC32(outputStream: ZipOutputStream) {
+    /**
+     * Corrupts the contents of the zip file.
+     * @param outputStream stream to corrupt
+     * @see [ZipOutputStream]
+     */
+    private fun corrupt(outputStream: ZipOutputStream) {
         val field = ZipOutputStream::class.java.getDeclaredField("crc")
         field.isAccessible = true
         field[outputStream] = object : CRC32() {
-            override fun getValue(): Long {
-                return RandomUtil.int(Int.MAX_VALUE).toLong()
-            }
+            override fun getValue() = RandomUtil.int(Int.MAX_VALUE).toLong()
         }
     }
 

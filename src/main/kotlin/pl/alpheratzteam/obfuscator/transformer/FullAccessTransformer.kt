@@ -11,7 +11,7 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 
 class FullAccessTransformer : Transformer {
 
-    private val accesses = intArrayOf(ACC_ANNOTATION, ACC_FINAL, ACC_ANNOTATION, ACC_ENUM, ACC_INTERFACE, ACC_MANDATED,
+    private val accesses = intArrayOf(ACC_ANNOTATION, ACC_FINAL, ACC_ENUM, ACC_INTERFACE, ACC_MANDATED,
         ACC_MODULE, ACC_OPEN, ACC_STRICT, ACC_SYNCHRONIZED, ACC_SYNTHETIC, ACC_TRANSIENT, ACC_TRANSITIVE, ACC_VARARGS, ACC_DEPRECATED
     ) // separate (enum): class, method, field
 
