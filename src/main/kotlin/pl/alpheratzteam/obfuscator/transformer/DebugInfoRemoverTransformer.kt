@@ -16,7 +16,7 @@ class DebugInfoRemoverTransformer : Transformer {
     override fun transform(obfuscator: Obfuscator) {
         val classes = mutableMapOf<String, ClassNode>()
         obfuscator.classes.values.forEach {
-            val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
+            val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS or ClassWriter.COMPUTE_FRAMES)
             it.accept(classWriter)
 
             val newClassNode = ClassNode()

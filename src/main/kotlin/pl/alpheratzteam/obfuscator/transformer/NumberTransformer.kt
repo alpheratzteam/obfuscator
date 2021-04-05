@@ -118,16 +118,46 @@ class NumberTransformer : Transformer {
 
             with (classNode) {
                 methods.filter { it.name.equals("<clinit>") }.forEach {
-                    it.instructions = makeIntClinit(it, classNode.name, intNumbers)
-                    it.instructions = makeDoubleClinit(it, classNode.name, doubleNumbers)
-                    it.instructions = makeFloatClinit(it, classNode.name, floatNumbers)
-                    it.instructions = makeLongClinit(it, classNode.name, longNumbers)
+                    it.instructions = makeClinit(it, classNode.name, intNumbers)
+                    it.instructions = makeClinit(it, classNode.name, doubleNumbers)
+                    it.instructions = makeClinit(it, classNode.name, floatNumbers)
+                    it.instructions = makeClinit(it, classNode.name, longNumbers)
                 }
             }
         }
     }
 
-    private fun makeIntClinit(methodNode: MethodNode, className: String, numberData: NumberData<Int>): InsnList {
+//    private fun <T : Number> changeInsn(classNode: ClassNode, methodNode: MethodNode, abstractInsnNode: AbstractInsnNode, numberData: NumberData<T>) {
+//        ConditionUtil.checkCondition(ASMUtil.isDoubleInsn(abstractInsnNode)) { // double
+//            val fieldNumber = RandomUtil.int(10, 3000)
+//            val originalNumber = ASMUtil.getDoubleFromInsn(abstractInsnNode)
+//            val fakeNumber = RandomUtil.int(10, 3000)
+//            val calcNumber = originalNumber * fakeNumber * fieldNumber
+//
+//
+//            when (numberData.numberType) {
+//                INTEGER -> numberData.addNumber(numberData.size, fieldNumber)
+//                LONG -> numberData.addNumber(numberData.size, fieldNumber.toLong() as Long)
+//                DOUBLE -> numberData.addNumber(numberData.size, fieldNumber.toDouble() as Double)
+//                FLOAT -> numberData.addNumber(numberData.size, fieldNumber.toFloat() as Float)
+//            }
+//
+//            methodNode.instructions.insertBefore(abstractInsnNode, insnBuilder {
+//                ldc(calcNumber)
+//                ldc(fakeNumber)
+//                getstatic(classNode.name, numberData.fieldName, numberData.numberType.descriptor)
+//                ldc(numberData.size)
+//                daload()
+//                dmul()
+//                ddiv()
+//            })
+//
+//            methodNode.instructions.remove(abstractInsnNode)
+//            ++numberData.size
+//        }
+//    }
+
+    private fun <T : Number> makeClinit(methodNode: MethodNode, className: String, numberData: NumberData<T>): InsnList {
         val insnNode = methodNode.instructions
         return insnBuilder {
             ldc(numberData.size)
@@ -136,61 +166,12 @@ class NumberTransformer : Transformer {
             numberData.numbers.forEach { (key, value) ->
                 getstatic(className, numberData.fieldName, numberData.numberType.descriptor)
                 ldc(key)
-                ldc(value)
-                insn(numberData.numberType.store)
-            }
-
-            +insnNode
-            _return()
-        }
-    }
-
-    private fun makeDoubleClinit(methodNode: MethodNode, className: String, numberData: NumberData<Double>): InsnList {
-        val insnNode = methodNode.instructions
-        return insnBuilder {
-            ldc(numberData.size)
-            newarray(numberData.numberType.opcode)
-            putstatic(className, numberData.fieldName, numberData.numberType.descriptor)
-            numberData.numbers.forEach { (key, value) ->
-                getstatic(className, numberData.fieldName, numberData.numberType.descriptor)
-                ldc(key)
-                ldc(value)
-                insn(numberData.numberType.store)
-            }
-
-            +insnNode
-            _return()
-        }
-    }
-
-    private fun makeFloatClinit(methodNode: MethodNode, className: String, numberData: NumberData<Float>): InsnList {
-        val insnNode = methodNode.instructions
-        return insnBuilder {
-            ldc(numberData.size)
-            newarray(numberData.numberType.opcode)
-            putstatic(className, numberData.fieldName, numberData.numberType.descriptor)
-            numberData.numbers.forEach { (key, value) ->
-                getstatic(className, numberData.fieldName, numberData.numberType.descriptor)
-                ldc(key)
-                ldc(value)
-                insn(numberData.numberType.store)
-            }
-
-            +insnNode
-            _return()
-        }
-    }
-
-    private fun makeLongClinit(methodNode: MethodNode, className: String, numberData: NumberData<Long>): InsnList {
-        val insnNode = methodNode.instructions
-        return insnBuilder {
-            ldc(numberData.size)
-            newarray(numberData.numberType.opcode)
-            putstatic(className, numberData.fieldName, numberData.numberType.descriptor)
-            numberData.numbers.forEach { (key, value) ->
-                getstatic(className, numberData.fieldName, numberData.numberType.descriptor)
-                ldc(key)
-                ldc(value)
+                when (numberData.numberType) {
+                    INTEGER -> ldc(value as Int)
+                    LONG -> ldc(value as Long)
+                    DOUBLE -> ldc(value as Double)
+                    FLOAT -> ldc(value as Float)
+                }
                 insn(numberData.numberType.store)
             }
 

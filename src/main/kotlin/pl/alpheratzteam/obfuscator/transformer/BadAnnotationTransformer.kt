@@ -4,7 +4,6 @@ import org.objectweb.asm.tree.AnnotationNode
 import pl.alpheratzteam.obfuscator.Obfuscator
 import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 import pl.alpheratzteam.obfuscator.util.StringUtil
-import java.util.ArrayList
 import java.util.Objects
 
 /**
