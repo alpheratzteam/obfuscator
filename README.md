@@ -21,8 +21,10 @@ todo
 - ~~insn builder~~
 - ~~number obf~~
 - ~~crc32 error~~
+- class/method/field renamer
 - decompilators crasher
 - website (?)
 - gui (c++, jni)
+- configuration toml/json
 
 ***
