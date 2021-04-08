@@ -20,7 +20,7 @@ class TrashCodeTransformer : Transformer {
         obfuscator.classes.values.forEach {
             it.methods.filter { !it.name.startsWith("<") }.forEach { methodNode ->
                 methodNode.instructions.forEach {
-                    if (!(it is MethodInsnNode)) {
+                    if (it !is MethodInsnNode) {
                         return@forEach
                     }
 

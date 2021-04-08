@@ -13,7 +13,7 @@ import kotlin.collections.set
 
 object ASMUtil {
 
-    /* ------------------ Constnats ------------------ */
+    /* ------------------ Constants ------------------ */
 
     const val OBJECT_TYPE = "java/lang/Object"
 

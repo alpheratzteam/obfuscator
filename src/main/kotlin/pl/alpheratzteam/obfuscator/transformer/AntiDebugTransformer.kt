@@ -5,6 +5,7 @@ import pl.alpheratzteam.obfuscator.Obfuscator
 import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 import pl.alpheratzteam.obfuscator.util.insnBuilder
 import org.objectweb.asm.tree.LabelNode
+import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 import pl.alpheratzteam.obfuscator.util.StringUtil
 
@@ -18,15 +19,13 @@ class AntiDebugTransformer : Transformer {
     private val debugTypes = arrayOf("-Xbootclasspath", "-Xdebug", "-agentlib", "-Xrunjdwp:", "-verbose")
 
     override fun transform(obfuscator: Obfuscator) {
-        TODO("Not yet implemented")
-//        obfuscator.classes.forEach {
-//            val classNode = it.value
-//            classNode.methods.find { it.name.equals("<clinit>") }.also {
-//                val methodNode = makeMethod()
-//                it?.instructions?.insertBefore(it.instructions.last, MethodInsnNode(INVOKESTATIC, classNode.name, methodNode.name, methodNode.desc, false))
-//                classNode.methods.add(methodNode)
-//            }
-//        }
+        obfuscator.classes.values.forEach { classNode ->
+            classNode.methods.find { it.name.equals("<clinit>") }.also {
+                val methodNode = makeMethod()
+                it?.instructions?.insertBefore(it.instructions.last, MethodInsnNode(INVOKESTATIC, classNode.name, methodNode.name, methodNode.desc, false))
+                classNode.methods.add(methodNode)
+            }
+        }
     }
 
     private fun makeMethod(): MethodNode {

@@ -127,36 +127,6 @@ class NumberTransformer : Transformer {
         }
     }
 
-//    private fun <T : Number> changeInsn(classNode: ClassNode, methodNode: MethodNode, abstractInsnNode: AbstractInsnNode, numberData: NumberData<T>) {
-//        ConditionUtil.checkCondition(ASMUtil.isDoubleInsn(abstractInsnNode)) { // double
-//            val fieldNumber = RandomUtil.int(10, 3000)
-//            val originalNumber = ASMUtil.getDoubleFromInsn(abstractInsnNode)
-//            val fakeNumber = RandomUtil.int(10, 3000)
-//            val calcNumber = originalNumber * fakeNumber * fieldNumber
-//
-//
-//            when (numberData.numberType) {
-//                INTEGER -> numberData.addNumber(numberData.size, fieldNumber)
-//                LONG -> numberData.addNumber(numberData.size, fieldNumber.toLong() as Long)
-//                DOUBLE -> numberData.addNumber(numberData.size, fieldNumber.toDouble() as Double)
-//                FLOAT -> numberData.addNumber(numberData.size, fieldNumber.toFloat() as Float)
-//            }
-//
-//            methodNode.instructions.insertBefore(abstractInsnNode, insnBuilder {
-//                ldc(calcNumber)
-//                ldc(fakeNumber)
-//                getstatic(classNode.name, numberData.fieldName, numberData.numberType.descriptor)
-//                ldc(numberData.size)
-//                daload()
-//                dmul()
-//                ddiv()
-//            })
-//
-//            methodNode.instructions.remove(abstractInsnNode)
-//            ++numberData.size
-//        }
-//    }
-
     private fun <T : Number> makeClinit(methodNode: MethodNode, className: String, numberData: NumberData<T>): InsnList {
         val insnNode = methodNode.instructions
         return insnBuilder {
@@ -181,3 +151,97 @@ class NumberTransformer : Transformer {
     }
 
 }
+
+// FIXME: 07.04.2021 V error - Exception in thread "main" java.lang.NegativeArraySizeException: -1
+//class NumberTransformer : Transformer {
+//
+//    // TODO: 04.04.2021 static initialization, unique string generator
+//
+//    override fun transform(obfuscator: Obfuscator) {
+//        obfuscator.classes.values.forEach { classNode ->
+//            val numberDatas = listOf(NumberData<Int>(StringUtil.generateString(8), INTEGER, arrayOf(IALOAD, IMUL, IXOR)), NumberData<Long>(StringUtil.generateString(8), LONG, arrayOf(LALOAD, LMUL, LXOR)),
+//                NumberData<Double>(StringUtil.generateString(8), DOUBLE, arrayOf(DALOAD, DMUL, DDIV)), NumberData<Float>(StringUtil.generateString(8), FLOAT, arrayOf(FALOAD, FMUL, FDIV)))
+//
+//            numberDatas.forEach { classNode.fields.add(it.getFieldNode()) }
+//
+//            classNode.methods.forEach { methodNode ->
+//                numberDatas.forEach { numberData ->
+//                    methodNode.instructions.forEach { abstractInsnNode ->
+//                        ConditionUtil.checkCondition(numberData.isNumber(abstractInsnNode)) {
+//                            val fieldNumber = RandomUtil.int(10, 3000)
+//                            val originalNumber = numberData.getNumber(abstractInsnNode)
+//                            val fakeNumber = RandomUtil.int(10, 3000)
+//                            methodNode.instructions.insertBefore(abstractInsnNode, insnBuilder {
+//                                when (numberData.numberType) {
+//                                    INTEGER -> {
+//                                        numberData.addNumber(numberData.size, fieldNumber)
+//                                        ldc((originalNumber.toInt() xor fakeNumber * fieldNumber))
+//                                    }
+//                                    DOUBLE -> {
+//                                        numberData.addNumber(numberData.size, fieldNumber.toDouble())
+//                                        ldc((originalNumber.toDouble() * fakeNumber * fieldNumber))
+//                                    }
+//                                    FLOAT -> {
+//                                        numberData.addNumber(numberData.size, fieldNumber.toFloat())
+//                                        ldc((originalNumber.toFloat() * fakeNumber * fieldNumber))
+//                                    }
+//                                    LONG -> {
+//                                        numberData.addNumber(numberData.size, fieldNumber.toLong())
+//                                        ldc((originalNumber.toLong() xor fakeNumber.toLong() * fieldNumber))
+//                                    }
+//                                }
+//
+//                                ldc(fakeNumber)
+//                                getstatic(classNode.name, numberData.fieldName, numberData.numberType.descriptor)
+//                                ldc(numberData.size)
+//                                numberData.opcodes.forEach { insn(it) }
+//                            })
+//
+//                            methodNode.instructions.remove(abstractInsnNode)
+//                            ++numberData.size
+//                        }
+//                    }
+//                }
+//            }
+//
+//            with (classNode) {
+//                methods.filter { it.name.equals("<clinit>") }.forEach { methodNode ->
+//                    val insnList = InsnList()
+//                    numberDatas.forEach { insnList.add(makeClinit(classNode.name, it)) }
+//
+//                    if (Objects.isNull(methodNode.instructions)) {
+//                        methodNode.instructions = InsnList()
+//                    }
+//
+//                    val cachedInsnNode = methodNode.instructions
+//                    methodNode.instructions.clear()
+//                    methodNode.instructions.add(insnBuilder {
+//                        +insnList
+//                        +cachedInsnNode
+//                        _return()
+//                    })
+//                }
+//            }
+//        }
+//    }
+//
+//    private fun <T : Number> makeClinit(className: String, numberData: NumberData<T>): InsnList {
+//        return insnBuilder {
+//            ldc(numberData.size)
+//            newarray(numberData.numberType.opcode)
+//            putstatic(className, numberData.fieldName, numberData.numberType.descriptor)
+//            numberData.numbers.forEach { (key, value) ->
+//                getstatic(className, numberData.fieldName, numberData.numberType.descriptor)
+//                ldc(key)
+//                when (numberData.numberType) {
+//                    INTEGER -> ldc(value as Int)
+//                    LONG -> ldc(value as Long)
+//                    DOUBLE -> ldc(value as Double)
+//                    FLOAT -> ldc(value as Float)
+//                }
+//                insn(numberData.numberType.store)
+//            }
+//        }
+//    }
+//
+//}

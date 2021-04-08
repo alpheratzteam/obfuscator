@@ -19,17 +19,10 @@ class ThrowableTransformer : Transformer {
     override fun transform(obfuscator: Obfuscator) {
         obfuscator.classes.values.forEach {
             it.methods.filter { !it.name.startsWith("<") }.forEach { methodNode ->
-                for (abstractInsnNode in methodNode.instructions) {
-                    if (!ASMUtil.isInstruction(abstractInsnNode)) {
-                        continue
-                    }
-
-                    if (Objects.isNull(abstractInsnNode.next)) {
-                        continue
-                    }
-
-                    methodNode.instructions.insertBefore(abstractInsnNode.next, makeInsn())
-                }
+                methodNode.instructions
+                    .asSequence()
+                    .filter { ASMUtil.isInstruction(it) && !Objects.isNull(it.next) }
+                    .forEach { methodNode.instructions.insertBefore(it.next, makeInsn()) }
             }
         }
     }

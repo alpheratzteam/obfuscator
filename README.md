@@ -15,7 +15,7 @@ todo
 
 ### TODO
 
-- boolean obf
+- ~~boolean obf~~
 - new string encryption
 - ~~java -> kotlin~~
 - ~~insn builder~~
