@@ -8,7 +8,7 @@ import pl.alpheratzteam.obfuscator.api.transformer.Transformer
 import pl.alpheratzteam.obfuscator.util.StringUtil
 import pl.alpheratzteam.obfuscator.util.insnBuilder
 import pl.alpheratzteam.obfuscator.util.RandomUtil
-import java.util.concurrent.atomic.AtomicInteger
+import pl.alpheratzteam.obfuscator.util.printlnAsm
 
 /**
  * @author Unix
@@ -42,7 +42,7 @@ class TrashCodeTransformer : Transformer {
                                 repeat((1..size).count()) { stringBuilder.append("Ljava/lang/String;") }
                                 stringBuilder.append(")V")
 
-                                for (i in 1..6) {
+                                repeat((1..RandomUtil.int(3, 10)).count()) {
                                     +LabelNode()
                                     val className = '\u0000' + StringUtil.getStringWithJavaKeywords(6)
                                     new(className)
@@ -84,7 +84,7 @@ class TrashCodeTransformer : Transformer {
                                 labels.forEach {
                                     +it
                                     frame(F_SAME, 0, null, 0, null)
-                                    when(RandomUtil.int(1, 5)) {
+                                    when(RandomUtil.int(1, 6)) {
                                         1 -> {
                                             new("java/lang/NullPointerException")
                                             dup()
@@ -97,15 +97,14 @@ class TrashCodeTransformer : Transformer {
                                             )
                                             athrow()
                                         }
-                                        2 -> goto(label3)
-                                        3 -> {
+                                        2 -> {
                                             val size = RandomUtil.int(1, 30)
                                             val stringBuilder = StringBuilder()
                                             stringBuilder.append("(")
                                             repeat((1..size).count()) { stringBuilder.append("Ljava/lang/String;") }
                                             stringBuilder.append(")V")
 
-                                            for (i in 1..6) {
+                                            repeat((1..RandomUtil.int(3, 10)).count()) {
                                                 +LabelNode()
                                                 val className = '\u0000' + StringUtil.getStringWithJavaKeywords(6)
                                                 new(className)
@@ -120,7 +119,15 @@ class TrashCodeTransformer : Transformer {
                                                 +LabelNode()
                                             }
                                         }
-                                        4 -> goto(label3)
+                                        3 -> {
+                                            ldc("AlpheratzObfuscator - https://github.com/alpheratzteam/obfuscator")
+                                            printlnAsm()
+                                        }
+                                        4 -> {
+                                            aconst_null()
+                                            athrow()
+                                        }
+                                        else -> goto(label3)
                                     }
                                 }
 
