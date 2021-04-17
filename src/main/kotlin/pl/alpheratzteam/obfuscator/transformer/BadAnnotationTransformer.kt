@@ -18,7 +18,9 @@ class BadAnnotationTransformer : Transformer {
 
     init {
         val string = StringUtil.generateString(RandomUtil.int(10, 64))
-        repeat((0..RandomUtil.int(1, 10)).count()) { annotations.add(AnnotationNode("$string")) }
+        repeat((0..RandomUtil.int(1, 10)).count()) { annotations.add(AnnotationNode("L$string;")) }
+        repeat((0..RandomUtil.int(1, 10)).count()) { annotations.add(AnnotationNode(string)) }
+        repeat((0..RandomUtil.int(1, 10)).count()) { annotations.add(AnnotationNode("@$string")) }
     }
 
     override fun transform(obfuscator: Obfuscator) {

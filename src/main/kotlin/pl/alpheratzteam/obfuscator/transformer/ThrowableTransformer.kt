@@ -38,12 +38,59 @@ class ThrowableTransformer : Transformer {
     fun makeInsn() : InsnList {
         return insnBuilder {
             +LabelNode()
-            val string = StringUtil.generateString(2)
-            ldc(string)
-            ldc(string + StringUtil.generateString(2))
-            invokevirtual("java/lang/String", "equals", "(Ljava/lang/Object;)Z", false)
+            val bool = RandomUtil.boolean()
+            val type = RandomUtil.int(1, 3)
+            when (type) {
+                1 -> {
+                    val string = StringUtil.generateString(2)
+                    ldc(string)
+                    when {
+                        bool -> {
+                            ldc(string + StringUtil.generateString(2))
+                        }
+                        else -> {
+                            ldc(string)
+                        }
+                    }
+                    invokevirtual("java/lang/String", "equals", "(Ljava/lang/Object;)Z", false)
+                }
+                2 -> {
+                    when (RandomUtil.int(1, 3)) {
+                        1 -> {
+                            ldc(RandomUtil.float(1.0, 200.0))
+                            when (RandomUtil.int(1, 3)) {
+                                1 -> invokestatic("java/lang/Float", "isInfinite", "(F)Z", false)
+                                2 -> invokestatic("java/lang/Float", "isNaN", "(F)Z", false)
+                            }
+                        }
+                        2 -> {
+                            ldc(RandomUtil.double(1.0, 200.0))
+                            when (RandomUtil.int(1, 3)) {
+                                1 -> invokestatic("java/lang/Double", "isInfinite", "(D)Z", false)
+                                2 -> invokestatic("java/lang/Double", "isNaN", "(D)Z", false)
+                            }
+                        }
+                    }
+                }
+            }
+//            val string = StringUtil.generateString(2)
+//            ldc(string)
+//            ldc(string + StringUtil.generateString(2))
+//            invokevirtual("java/lang/String", "equals", "(Ljava/lang/Object;)Z", false)
             val labelNode = LabelNode()
-            ifeq(labelNode)
+            when (type) {
+                1 -> {
+                    when {
+                        bool -> {
+                            ifeq(labelNode)
+                        }
+                        else -> {
+                            ifne(labelNode)
+                        }
+                    }
+                }
+                else -> ifeq(labelNode)
+            }
             val labelNode1 = LabelNode()
             +labelNode1
 
