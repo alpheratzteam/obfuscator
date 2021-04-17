@@ -1,6 +1,7 @@
 package pl.alpheratzteam.obfuscator.util
 
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.commons.CodeSizeEvaluator
 import org.objectweb.asm.tree.*
 import java.util.*
 import kotlin.collections.HashMap
@@ -160,5 +161,13 @@ object ASMUtil {
     }
 
     fun isInstruction(insn: AbstractInsnNode?) = insn !is FrameNode && insn !is LineNumberNode && insn !is LabelNode
+
+    fun getMaxSize(methodNode: MethodNode): Int {
+        val codeSizeEvaluator = CodeSizeEvaluator(null)
+        methodNode.accept(codeSizeEvaluator)
+        return codeSizeEvaluator.getMaxSize()
+    }
+
+    fun hasInstructions(methodNode: MethodNode) = Objects.nonNull(methodNode.instructions) && methodNode.instructions.size() > 0
 
 }

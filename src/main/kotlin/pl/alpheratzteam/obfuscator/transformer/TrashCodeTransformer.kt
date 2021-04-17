@@ -23,13 +23,66 @@ class TrashCodeTransformer : Transformer {
                 methodNode.instructions.filter { it is MethodInsnNode }.map { it as MethodInsnNode }
                     .filter { !it.owner.startsWith("\u0000") }.forEach {
                     methodNode.instructions.insertBefore(it.next, insnBuilder {
+                        val bool = RandomUtil.boolean()
+
                         +LabelNode()
-                        val string = StringUtil.generateString(2)
-                        ldc(string)
-                        ldc(string + StringUtil.generateString(2))
-                        invokevirtual("java/lang/String", "equals", "(Ljava/lang/Object;)Z", false)
+
+                        // TODO: 17.04.2021 code cleanup.
+
+                        val type = RandomUtil.int(1, 3)
+                        when (type) {
+                            1 -> {
+                                val string = StringUtil.generateString(2)
+                                ldc(string)
+                                when {
+                                    bool -> {
+                                        ldc(string + StringUtil.generateString(2))
+                                    }
+                                    else -> {
+                                        ldc(string)
+                                    }
+                                }
+                                invokevirtual("java/lang/String", "equals", "(Ljava/lang/Object;)Z", false)
+                            }
+                            2 -> {
+                                when (RandomUtil.int(1, 3)) {
+                                    1 -> {
+                                        ldc(RandomUtil.float(1.0, 200.0))
+                                        when (RandomUtil.int(1, 3)) {
+                                            1 -> invokestatic("java/lang/Float", "isInfinite", "(F)Z", false)
+                                            2 -> invokestatic("java/lang/Float", "isNaN", "(F)Z", false)
+                                        }
+                                    }
+                                    2 -> {
+                                        ldc(RandomUtil.double(1.0, 200.0))
+                                        when (RandomUtil.int(1, 3)) {
+                                            1 -> invokestatic("java/lang/Double", "isInfinite", "(D)Z", false)
+                                            2 -> invokestatic("java/lang/Double", "isNaN", "(D)Z", false)
+                                        }
+                                    }
+                                }
+                            }
+                            3 -> {
+
+                            }
+                        }
+
                         val labelNode = LabelNode()
-                        ifeq(labelNode)
+
+                        when (type) {
+                            1 -> {
+                                when {
+                                    bool -> {
+                                        ifeq(labelNode)
+                                    }
+                                    else -> {
+                                        ifne(labelNode)
+                                    }
+                                }
+                            }
+                            else -> ifeq(labelNode)
+                        }
+
                         val labelNode1 = LabelNode()
                         +labelNode1
                         // start

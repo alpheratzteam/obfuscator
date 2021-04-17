@@ -32,6 +32,12 @@ object RandomUtil {
 
     /**
      * Randomizes a number.
+     * @return [Float] randomized float value.
+     */
+    fun float() = random.nextFloat()
+
+    /**
+     * Randomizes a number.
      * @param min as min value to randomize.
      * @param max as max value to randomize.
      * @return [Int] randomized int value.
@@ -45,6 +51,14 @@ object RandomUtil {
      * @return [Double] randomized double value.
      */
     fun double(min: Double, max: Double) = random.nextDouble(min, max)
+
+    /**
+     * Randomizes a number.
+     * @param [min] as min value to randomize.
+     * @param [max] as max value to randomize.
+     * @return [Float] randomized float value.
+     */
+    fun float(min: Double, max: Double) = double(min, max).toFloat()
 
     /**
      * Randomizes the chance.
